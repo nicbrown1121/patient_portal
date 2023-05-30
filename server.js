@@ -1,5 +1,5 @@
 const express = require("express");
-const { Worker } = require("./models"); // Assuming models folder is in the same directory as server.js
+const { Patient, Worker } = require("./models"); // Assuming models folder is in the same directory as server.js
 const bcrypt = require("bcrypt"); // bcrypt will be used for hashing passwords
 const verifyToken = require("./verifyToken");
 const cors = require("cors"); // new line
@@ -54,19 +54,27 @@ app.post("/register", async (req, res) => {
   }
 });
 
+// PATIENTS
 //To use middleware function that checks and verifies the
 //token on the request header before proceeding to endpoint logic
-router.get("/patient", verifyToken, async (req, res) => {
-  const [rows] = await patient_portal.execute("SELECT * FROM Patient");
-  // If the token is successfully verified, we can send the protected info
-  res.json(rows, {
-    message: "This is protected data.",
-    // The req.userId is set in verifyToken middleware
-    userId: req.userId,
-  });
+app.get("/patient", verifyToken, async (req, res) => {
+  console.log("patient route");
+  try {
+    const patients = await Patient.findAll();
+    // If the token is successfully verified, we can send the protected info
+    res.json({
+      data: patients,
+      message: "This is protected data.",
+      userId: req.userId,
+    });
+  } catch (error) {
+    console.log("error on route");
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
 });
 
-app.use("/api", router);
+// app.use("/api", router);
 
 app.listen(3001, () => {
   console.log("Server is running on port 3001");

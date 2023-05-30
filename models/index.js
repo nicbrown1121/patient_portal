@@ -11,14 +11,8 @@ const db = {};
 
 let sequelize;
 if (config.use_env_variable) {
-  console.log(
-    `Sequelize address: ${process.env[config.use_env_variable]} && ${config}`
-  );
   sequelize = new Sequelize(process.env[config.use_env_variable], config);
 } else {
-  console.log(
-    `Sequelize address: ${process.env[config.use_env_variable]} && ${config}`
-  );
   sequelize = new Sequelize(
     config.database,
     config.username,
