@@ -51,25 +51,36 @@ function LoginForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input
-        type="text"
-        placeholder="Username"
-        name="username"
-        value={userState.username}
-        onChange={(e) => {
-          setUserState({ ...userState, [e.target.name]: e.target.value });
-        }}
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        name="password"
-        value={userState.password}
-        onChange={handleInputChange}
-      />
-      <button type="submit">Login</button>
-    </form>
+    <div>
+      <h3 style={{ textAlign: "center", fontSize: "30px" }}>
+        Login To Your Account:
+      </h3>
+      <div className="loginForm">
+        <form onSubmit={handleSubmit}>
+          <input
+            className="inputField"
+            type="text"
+            placeholder="Username"
+            name="username"
+            value={userState.username}
+            onChange={(e) => {
+              setUserState({ ...userState, [e.target.name]: e.target.value });
+            }}
+          />
+          <input
+            className="inputField"
+            type="password"
+            placeholder="Password"
+            name="password"
+            value={userState.password}
+            onChange={handleInputChange}
+          />
+          <button className="inputButton" type="submit">
+            Login
+          </button>
+        </form>
+      </div>
+    </div>
   );
 }
 

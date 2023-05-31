@@ -1,0 +1,120 @@
+/* NAVBAR */
+.navBar {
+  height: 50px;
+  gap: "50px";
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  border-style: round;
+  border: 2px solid rgb(199, 201, 201);
+  border-radius: 20px;
+  box-shadow: 0 8px 8px -4px lightblue;
+  background-image: linear-gradient(rgb(248, 248, 248), rgb(211, 213, 213)) ;
+}
+
+.leftLinks {
+  padding-left: 20px;
+  display: flex;
+  gap: 20px
+}
+
+.rightLinks {
+  padding-right: 20px;
+  display: flex;
+  gap: 20px
+}
+
+.navBar:hover {
+  font-style: bold;
+}
+
+/* REGISTER FORM */
+.registerForm, .loginForm {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 50px;
+}
+
+.inputField {
+  background-color: #fff;
+  border: 1px solid #d5d9d9;
+  border-radius: 8px;
+  width: 200px;
+  height: 30px;
+  margin-bottom: 10px;
+  margin-left: 5px;
+
+}
+
+.inputButton {
+  background-color: #fff;
+  border: 1px solid #d5d9d9;
+  border-radius: 8px;
+  box-shadow: rgba(213, 217, 217, .5) 0 2px 5px 0;
+  color: #0f1111;
+  cursor: pointer;
+  /* display: inline-block; */
+  font-family: "Amazon Ember",sans-serif;
+  font-size: 13px;
+  line-height: 29px;
+  padding: 0 10px 0 11px;
+  text-align: center;
+  width: 100px;
+  margin-left: 10px;
+  transition: background-color 0.3s ease; /* Add transition for smooth color change */
+
+}
+
+.inputButton:hover {
+  background-color: #ceeeee;
+}
+
+/* /PATIENT */
+
+.patientCard {
+  /* justify-content: center; */
+  display: flex;
+  /* width: 50%; */
+  align-items: center;
+  justify-content: center;
+  border-style: round;
+  border: 2px solid rgb(199, 201, 201);
+  border-radius: 20px;
+  box-shadow: 0 8px 8px -4px lightblue;
+}
+
+.patientButton {
+  background-color: #fff;
+  border: 1px solid #d5d9d9;
+  border-radius: 8px;
+  box-shadow: rgba(213, 217, 217, .5) 0 2px 5px 0;
+  color: #0f1111;
+  cursor: pointer;
+  display: inline-block;
+  font-family: "Amazon Ember",sans-serif;
+  font-size: 13px;
+  line-height: 29px;
+  padding: 0 10px 0 11px;
+  text-align: center;
+  width: 100px;
+  transition: background-color 0.3s ease; /* Add transition for smooth color change */
+
+}
+
+.patientButton:hover {
+  background-color: #ceeeee;
+}
+
+
+.patientTable {
+  width: 100%;
+  table-layout: fixed;
+}
+
+.patientTable th,
+.patientTable td {
+  text-align: center;
+  padding: 8px;
+}

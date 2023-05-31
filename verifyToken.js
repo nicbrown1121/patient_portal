@@ -14,12 +14,14 @@ function verifyToken(req, res, next) {
     token.split(" ")[1],
     "patientPortalSecret",
     function (err, decoded) {
+      console.log("in jwt verify function");
       if (err) {
+        console.log("Error while verifying token: ", err.message); // add this
         return res
           .status(500)
           .send({ auth: false, message: "Failed to authenticate token." });
       }
-
+      console.log("Token is verified, decoded information: ", decoded); // add this
       req.userId = decoded.id;
       next();
     }

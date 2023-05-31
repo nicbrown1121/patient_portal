@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import { useRouter } from "next/router";
 import UserContext from "../contexts/UserContext";
 
@@ -10,16 +10,14 @@ export default function Home() {
 
   console.log("user", user);
 
-  useEffect(() => {
-    if (!user.isLoggedIn) {
-      router.push("/login");
-    }
-  }, [user, router]);
-
-  return (
-    <div>
-      <h1>Welcome, {user.username}!</h1>
-      ... rest of your component ...
-    </div>
-  );
+  if (!user.isLoggedIn) {
+    router.push("/login");
+  } else {
+    return (
+      <div>
+        <h1>Welcome, {user.username}!</h1>
+        ... rest of your component ...
+      </div>
+    );
+  }
 }

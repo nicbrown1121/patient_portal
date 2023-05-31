@@ -2,9 +2,15 @@
 import Link from "next/link";
 import UserContext, { UserReducer } from "../contexts/UserContext";
 import React, { useState, useReducer } from "react";
+import "../CSS/App.css";
+import { useRouter } from "next/router";
+import { QueryClientProvider } from "@tanstack/react-query";
+import queryClient from "./queryClient";
+
 // import "../styles/globals.css"; If you have global CSS file
 
 function App({ Component, pageProps }) {
+  const router = useRouter();
   const token =
     typeof window !== "undefined" ? localStorage.getItem("token") : "";
   const initialUserContext = {
@@ -15,19 +21,29 @@ function App({ Component, pageProps }) {
 
   const [user, dispatch] = useReducer(UserReducer, initialUserContext);
 
+  const handleNavigate = (path) => {
+    router.push(path);
+  };
+
   return (
-    <UserContext.Provider value={{ user, dispatch }}>
-      <div>
-        <nav>
-          <Link href="/">Home</Link>
-          <Link href="/patient">Patients</Link>
-          <Link href="/login">Login</Link>
-          <Link href="/register">Register</Link>
-          {/* <Link href="/register">Register</Link> */}
-        </nav>
-        <Component {...pageProps} />
-      </div>
-    </UserContext.Provider>
+    <QueryClientProvider client={queryClient}>
+      <UserContext.Provider value={{ user, dispatch }}>
+        <div>
+          <nav className="navBar">
+            <div className="leftLinks">
+              {/* <button onClick={() => handleNavigate("/")}>Home</button> */}
+              <div onClick={() => handleNavigate("/")}>Home</div>
+              <div onClick={() => handleNavigate("/patient")}>Patients</div>
+            </div>
+            <div className="rightLinks">
+              <div onClick={() => handleNavigate("/login")}>Login</div>
+              <div onClick={() => handleNavigate("/register")}>Register</div>
+            </div>
+          </nav>
+          <Component {...pageProps} />
+        </div>
+      </UserContext.Provider>
+    </QueryClientProvider>
   );
 }
 
