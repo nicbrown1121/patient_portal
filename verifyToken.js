@@ -1,7 +1,10 @@
 // Middleware for checking JWT
 const jwt = require("jsonwebtoken");
 
+//takes req (request object), res (response object),
+// and next (callback function that moves the request to the next middleware in the stack).
 function verifyToken(req, res, next) {
+  console.log("req.headers", req.headers);
   const token = req.headers["authorization"];
   console.log("token in VERIFY JS", token);
 

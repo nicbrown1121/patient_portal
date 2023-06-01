@@ -1,10 +1,11 @@
 import React, { useEffect, useState, useContext } from "react";
 import UserContext from "../contexts/UserContext";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 function PatientFunc() {
   // const [patientData, setPatientData] = useState([]);
   const { user, dispatch } = useContext(UserContext);
+  const queryClient = useQueryClient();
 
   // useEffect(() => {
   //   console.log("Token log: ", user.token);
@@ -20,25 +21,30 @@ function PatientFunc() {
   //     .then((data) => setPatientData(data));
   // }, []);
 
-  const fetchPatients = async () => {
-    const res = await fetch("http://localhost:3001/patient", {
-      headers: {
-        Authorization: `Bearer ${user.token}`,
-      },
-    });
-    // console.log("res", res);
-    const data = await res.json();
-    // console.log("data", data);
-    return data;
-  };
+  // const fetchPatients = async () => {
+  //   const res = await fetch("http://localhost:3001/patient", {
+  //     headers: {
+  //       Authorization: `Bearer ${user.token}`,
+  //     },
+  //   });
+  //   // console.log("res", res);
+  //   const data = await res.json();
+  //   // console.log("data", data);
+  //   return data;
+  // };
 
-  const {
-    data: patientData,
-    isLoading,
-    error,
-  } = useQuery({ queryKey: ["patient"], queryFn: fetchPatients });
+  // const {
+  //   data: patientData,
+  //   isLoading,
+  //   error,
+  // } = useQuery({
+  //   queryKey: ["patient"],
+  //   queryFn: fetchPatients,
+  //   cacheTime: "10000",
+  // });
+  const patients = queryClient.getQueryData(["patient"]);
 
-  console.log("patientData", patientData);
+  console.log("patient on PatientFunc.js", patients);
 
   return (
     <div>
@@ -54,8 +60,8 @@ function PatientFunc() {
             </tr>
           </thead>
           <tbody className="patientList">
-            {/* {patientData.data &&
-              patientData.data.map((patient) => (
+            {patients &&
+              patients.data.map((patient) => (
                 <tr className="row" key={patient.id}>
                   <td>{patient.name}</td>
                   <td>{patient.dateOfBirth}</td>
@@ -63,12 +69,12 @@ function PatientFunc() {
                   <td>{patient.location}</td>
                   <button
                     className="patientButton"
-                    onClick={() => handleAssessment(patient.mrn)}
+                    onClick={() => handleAssessment(patient.id)}
                   >
                     Go to Patient
                   </button>
                 </tr>
-              ))} */}
+              ))}
           </tbody>
         </table>
       </div>

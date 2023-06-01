@@ -118,3 +118,53 @@
   text-align: center;
   padding: 8px;
 }
+
+/* HOMEPAGE */
+.cards {
+  display: grid;
+  grid-template-columns: 2fr 2fr;
+}
+
+.assessments, .patientCards {
+  /* display: grid; */
+  /* width: 80%; */
+  height: 200px;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  border-style: round;
+  border: 2px solid rgb(199, 201, 201);
+  border-radius: 20px;
+  box-shadow: 0 8px 8px -4px lightblue;
+  /* cursor: pointer; */
+    /* grid-template-columns: 1fr 1fr; */
+}
+
+.assessments:hover {
+  cursor: pointer;
+}
+
+.assessmentCard {
+  display: grid;
+  /* width: 50%; */
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  grid-template-columns: 1fr 1fr;
+}
+
+.assessmentColumn, .intitialColumn {
+  padding-top: 20px;
+  /* justify-content: center; */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.reassessNumber, .initialNumber {
+  font-size: 40px;
+  font-style: bold;
+  color: red;
+  font-family: Arial, Helvetica, sans-serif;
+
+}
