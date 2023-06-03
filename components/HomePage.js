@@ -23,7 +23,7 @@ export default function HomePage() {
   const {
     data: patientData,
     isLoading,
-    error,
+    status,
   } = useQuery({
     queryKey: ["patient"],
     queryFn: fetchPatients,
@@ -34,18 +34,18 @@ export default function HomePage() {
   //   queryKey: ["patient", { seen: "true" }],
   // });
 
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
   let seenPatients = {};
   let unseenPatients = {};
-  if (patientData !== undefined) {
+  if (patientData !== undefined && status === "success") {
     seenPatients = patientData.data.filter((patient) => patient.seen);
     unseenPatients = patientData.data.filter((patient) => !patient.seen);
   }
 
   console.log({ seenPatients, unseenPatients });
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
 
   if (!user.isLoggedIn) {
     router.push("/login");
