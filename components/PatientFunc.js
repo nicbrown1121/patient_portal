@@ -3,45 +3,9 @@ import UserContext from "../contexts/UserContext";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 function PatientFunc() {
-  // const [patientData, setPatientData] = useState([]);
   const { user, dispatch } = useContext(UserContext);
   const queryClient = useQueryClient();
 
-  // useEffect(() => {
-  //   console.log("Token log: ", user.token);
-  //   fetch("http://localhost:3001/patient", {
-  //     headers: {
-  //       Authorization: `Bearer ${user.token}`,
-  //     },
-  //   })
-  //     .then((response) => {
-  //       console.log("response", response);
-  //       return response.json();
-  //     })
-  //     .then((data) => setPatientData(data));
-  // }, []);
-
-  // const fetchPatients = async () => {
-  //   const res = await fetch("http://localhost:3001/patient", {
-  //     headers: {
-  //       Authorization: `Bearer ${user.token}`,
-  //     },
-  //   });
-  //   // console.log("res", res);
-  //   const data = await res.json();
-  //   // console.log("data", data);
-  //   return data;
-  // };
-
-  // const {
-  //   data: patientData,
-  //   isLoading,
-  //   error,
-  // } = useQuery({
-  //   queryKey: ["patient"],
-  //   queryFn: fetchPatients,
-  //   cacheTime: "10000",
-  // });
   const patients = queryClient.getQueryData(["patient"]);
 
   console.log("patient on PatientFunc.js", patients);

@@ -30,22 +30,33 @@ export default function HomePage() {
     cacheTime: "10000",
   });
 
-  // const patientsSeen = useQuery({
-  //   queryKey: ["patient", { seen: "true" }],
+  // const { data: seenPatientData } = useQuery({
+  //   queryKey: ["patient", { seen: true }],
+  //   queryFn: fetchPatients,
+  //   cacheTime: "10000",
+  //   enabled: patientData !== undefined && status === "success",
+  //   // Set 'enabled' to true only when the initial patient data has been loaded successfully
   // });
+
+  // console.log("seenPatientData from react query", seenPatientData);
+
+  let seenPatients = {};
+  let unseenPatients = {};
 
   if (isLoading) {
     return <div>Loading...</div>;
   }
-
-  let seenPatients = {};
-  let unseenPatients = {};
   if (patientData !== undefined && status === "success") {
+    console.log("patientData", patientData);
     seenPatients = patientData.data.filter((patient) => patient.seen);
     unseenPatients = patientData.data.filter((patient) => !patient.seen);
   }
 
   console.log({ seenPatients, unseenPatients });
+
+  const handleAssessments = () => {
+    router.push("/assessments");
+  };
 
   if (!user.isLoggedIn) {
     router.push("/login");
@@ -54,7 +65,7 @@ export default function HomePage() {
       <div>
         <h1 style={{ textAlign: "center" }}>Welcome, {user.username}!</h1>
         <div className="cards">
-          <div className="assessments">
+          <div className="assessments" onClick={handleAssessments}>
             <h3> Today's Assessments</h3>
             <div className="assessmentCard">
               <div className="assessmentColumn">
