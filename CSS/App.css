@@ -71,7 +71,7 @@
   background-color: #ceeeee;
 }
 
-/* /PATIENT */
+/* /PATIENT LIST */
 
 .patientCard {
   /* justify-content: center; */
@@ -166,5 +166,43 @@
   font-style: bold;
   color: red;
   font-family: Arial, Helvetica, sans-serif;
+}
 
+/* PATIENT.JS */
+
+.patientCards {
+  /* display: grid; */
+  /* width: 80%; */
+  height: 200px;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  border-style: round;
+  border: 2px solid rgb(199, 201, 201);
+  border-radius: 20px;
+  box-shadow: 0 8px 8px -4px lightblue;
+  /* cursor: pointer; */
+    /* grid-template-columns: 1fr 1fr; */
+}
+.patientPage {
+  margin-right: 10px;
+  margin-left: 10px;
+  display: flex;
+}
+
+.notesColumn {
+  /* margin-left: 10px; */
+  flex: 1;
+}
+
+.rightColumn {
+  /* width: 50%; */
+  margin-left: 30px;
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+}
+
+.rightColumn .patientCards {
+  margin-bottom: 10px;
 }
