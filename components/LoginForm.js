@@ -14,7 +14,7 @@ function LoginForm() {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const response = await fetch("http://localhost:3001/login", {
+    const response = await fetch("http://localhost:3001/api/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -27,7 +27,7 @@ function LoginForm() {
     console.log({ data });
 
     if (data.auth) {
-      console.log("data okay");
+      console.log({ data: data.auth });
       localStorage.setItem("token", data.token); // Store the token
       dispatch({
         type: "LOGIN",

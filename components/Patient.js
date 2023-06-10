@@ -1,12 +1,16 @@
 import React, { useEffect, useState, useContext } from "react";
 import UserContext from "../contexts/UserContext";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { checkTokenExpiration } from "../pages/auth";
 
 function Patient({ id }) {
   const { user, dispatch } = useContext(UserContext);
   const queryClient = useQueryClient();
+  console.log("in Patient.js");
 
-  console.log("id on Patient.js", typeof id);
+  useEffect(() => {
+    checkTokenExpiration();
+  }, []);
 
   const currPatient = queryClient
     .getQueryData(["patient"])

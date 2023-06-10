@@ -1,14 +1,26 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import UserContext from "../contexts/UserContext";
+import { useRouter } from "next/router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { checkTokenExpiration } from "../pages/auth";
 
 function PatientFunc() {
   const { user, dispatch } = useContext(UserContext);
   const queryClient = useQueryClient();
+  const router = useRouter();
+
+  useEffect(() => {
+    checkTokenExpiration();
+  }, []);
 
   const patients = queryClient.getQueryData(["patient"]);
 
   console.log("patient on PatientFunc.js", patients);
+
+  const handleAssessment = (patientId) => {
+    console.log("in handle assessment", patientId);
+    router.push(`/patient/${patientId}`);
+  };
 
   return (
     <div>
