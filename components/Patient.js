@@ -5,6 +5,7 @@ import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { checkTokenExpiration } from "../pages/auth";
+import { formatDate } from "./utils/formatDate";
 
 function Patient({ id }) {
   const { user, dispatch } = useContext(UserContext);
@@ -87,6 +88,16 @@ function Patient({ id }) {
     setCreateModal(false);
   };
 
+  // function formatDate(date) {
+  //   const formattedDate = new Date(date).toLocaleDateString("en-US", {
+  //     year: "numeric",
+  //     month: "2-digit",
+  //     day: "2-digit",
+  //   });
+
+  //   return formattedDate;
+  // }
+
   const handleCreateAssessment = () => {};
 
   return (
@@ -129,17 +140,20 @@ function Patient({ id }) {
         </Modal.Footer>
       </Modal>
       <div className="patientInfo">
-        <h2 style={{ textAlign: "center" }}>{currPatient.name}</h2>
+        <h1 style={{ textAlign: "center" }}>{currPatient.name}</h1>
       </div>
       <div className="patientPage">
         <div className="notesColumn">
           <div className="patientCards">
             <h2>Assessments</h2>
-            <button className="patientButton" onClick={handleCreateAssessment}>
+            <button
+              className="assessmentButton"
+              onClick={handleCreateAssessment}
+            >
               Create Assessment
             </button>
           </div>
-          <div className="patientCards">
+          <div className="patientCards" style={{ overflowY: "scroll" }}>
             <h2>Notes</h2>
             <button className="patientButton" onClick={handleCreateNote}>
               Create Note
@@ -155,7 +169,7 @@ function Patient({ id }) {
                 {notesObj &&
                   Object.values(notesObj).map((note) => (
                     <tr className="row" key={note.id}>
-                      <td>{note.createdAt}</td>
+                      <td>{formatDate(note.createdAt)}</td>
                       <td>{note.text}</td>
                     </tr>
                   ))}
@@ -166,7 +180,7 @@ function Patient({ id }) {
         <div className="rightColumn">
           <div className="patientCards">
             <h2>Current Admission</h2>
-            <ol> Admission Date: {currPatient.dateOfAdmission}</ol>
+            <ol> Admission Date: {formatDate(currPatient.dateOfAdmission)}</ol>
             <ol> Diagnosis: {currPatient.diagnosis} </ol>
             <ol> Location: {currPatient.location} </ol>
           </div>

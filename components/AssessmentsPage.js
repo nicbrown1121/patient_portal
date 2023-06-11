@@ -2,6 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import UserContext from "../contexts/UserContext";
 import { useRouter } from "next/router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { formatDate } from "./utils/formatDate";
 // import { checkTokenExpiration } from "../pages/auth";
 
 function AssessmentsPage() {
@@ -43,7 +44,7 @@ function AssessmentsPage() {
               unseenPatients.map((patient) => (
                 <tr className="row" key={patient.id}>
                   <td>{patient.name}</td>
-                  <td>{patient.dateOfBirth}</td>
+                  <td>{formatDate(patient.dateOfBirth)}</td>
                   <td>{patient.id}</td>
                   <td>{patient.location}</td>
                   <button
@@ -73,7 +74,7 @@ function AssessmentsPage() {
               seenPatients.map((patient) => (
                 <tr className="row" key={patient.id}>
                   <td>{patient.name}</td>
-                  <td>{patient.dateOfBirth}</td>
+                  <td>{formatDate(patient.dateOfBirth)}</td>
                   <td>{patient.id}</td>
                   <td>{patient.location}</td>
                   <button

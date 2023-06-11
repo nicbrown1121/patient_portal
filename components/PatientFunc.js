@@ -3,6 +3,7 @@ import UserContext from "../contexts/UserContext";
 import { useRouter } from "next/router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { checkTokenExpiration } from "../pages/auth";
+import { formatDate } from "./utils/formatDate";
 
 function PatientFunc() {
   const { user, dispatch } = useContext(UserContext);
@@ -39,7 +40,7 @@ function PatientFunc() {
               patients.data.map((patient) => (
                 <tr className="row" key={patient.id}>
                   <td>{patient.name}</td>
-                  <td>{patient.dateOfBirth}</td>
+                  <td>{formatDate(patient.dateOfBirth)}</td>
                   <td>{patient.id}</td>
                   <td>{patient.location}</td>
                   <button
