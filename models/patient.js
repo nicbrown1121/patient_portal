@@ -22,6 +22,10 @@ module.exports = (sequelize, DataTypes) => {
       location: DataTypes.STRING,
       diagnosis: DataTypes.STRING,
       seen: DataTypes.BOOLEAN,
+      height: DataTypes.INTEGER,
+      weight: DataTypes.INTEGER,
+      dietOrder: DataTypes.STRING,
+      fluidRestriction: DataTypes.INTEGER,
     },
     {
       sequelize,

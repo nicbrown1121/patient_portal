@@ -24,10 +24,8 @@ function LoginForm() {
     });
 
     const data = await response.json();
-    console.log({ data });
 
     if (data.auth) {
-      console.log({ data: data.auth });
       localStorage.setItem("token", data.token); // Store the token
       dispatch({
         type: "LOGIN",

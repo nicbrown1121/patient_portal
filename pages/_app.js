@@ -7,8 +7,6 @@ import { useRouter } from "next/router";
 import { QueryClientProvider } from "@tanstack/react-query";
 import queryClient from "./queryClient";
 
-// import "../styles/globals.css"; If you have global CSS file
-
 function App({ Component, pageProps }) {
   const router = useRouter();
   const token =

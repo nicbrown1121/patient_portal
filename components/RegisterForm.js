@@ -29,7 +29,6 @@ function RegisterForm() {
     });
 
     const text = await response.text();
-    console.log("response", text);
 
     // Now parse the text as JSON
     try {

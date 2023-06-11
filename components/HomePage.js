@@ -31,7 +31,6 @@ export default function HomePage() {
     // }
 
     const data = await res.json();
-    console.log({ data });
     return data;
   }
 
@@ -67,7 +66,6 @@ export default function HomePage() {
     if (patientData.auth === false) {
       router.push("/login");
     } else if (status === "success") {
-      console.log("patientData", patientData);
       seenPatients = patientData.data.filter((patient) => patient.seen);
       unseenPatients = patientData.data.filter((patient) => !patient.seen);
     }

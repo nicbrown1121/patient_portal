@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import UserContext from "../contexts/UserContext";
 import { useRouter } from "next/router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { checkTokenExpiration } from "../pages/auth";
+// import { checkTokenExpiration } from "../pages/auth";
 
 function AssessmentsPage() {
   const { user, dispatch } = useContext(UserContext);
@@ -22,7 +22,6 @@ function AssessmentsPage() {
   }
 
   const goToPatient = (patientId) => {
-    console.log("patientId", patientId);
     router.push(`/patient/${patientId}`);
   };
 
