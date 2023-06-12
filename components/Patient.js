@@ -13,24 +13,26 @@ function Patient({ id }) {
   const [note, setNote] = useState("");
   const queryClient = useQueryClient();
   let notesObj = {};
+  let currPatient = {};
 
   useEffect(() => {
     checkTokenExpiration();
   }, []);
 
-  const currPatient = queryClient
-    .getQueryData(["patient"])
-    .data.find((patient) => patient.id === parseInt(id, 10));
+  const allPatients = queryClient.getQueryData(["patient"]);
+  if (allPatients !== undefined) {
+    currPatient = allPatients.data.find(
+      (patient) => patient.id === parseInt(id, 10)
+    );
+  }
 
-  console.log("currPatient", currPatient);
+  console.log({ currPatient, allPatients });
 
   const bmi =
     (currPatient.weight / (currPatient.height * currPatient.height)) * 703;
 
   async function fetchNotesandAssessments() {
-    const res = await fetch(
-      `http://localhost:3001/api/patient/${currPatient.id}`
-    );
+    const res = await fetch(`http://localhost:3001/api/patient/${id}`);
     console.log("res", res);
     if (!res.ok) {
       console.log("Failed to fetch assessment data");
@@ -88,16 +90,6 @@ function Patient({ id }) {
     setCreateModal(false);
   };
 
-  // function formatDate(date) {
-  //   const formattedDate = new Date(date).toLocaleDateString("en-US", {
-  //     year: "numeric",
-  //     month: "2-digit",
-  //     day: "2-digit",
-  //   });
-
-  //   return formattedDate;
-  // }
-
   const handleCreateAssessment = () => {};
 
   return (
@@ -117,7 +109,7 @@ function Patient({ id }) {
           <Form>
             <Form.Group controlId="username">
               <Form.Label>Username:</Form.Label>
-              <Form.Control type="text" value={user.username} />
+              <Form.Control type="text" defaultValue={user.username} />
             </Form.Group>
             <Form.Group controlId="note">
               <Form.Label>Note:</Form.Label>

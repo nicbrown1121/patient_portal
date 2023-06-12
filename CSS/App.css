@@ -125,16 +125,25 @@
 }
 
 
-.patientTable {
+.patientTable, .row {
   width: 100%;
   table-layout: fixed;
-}
-
-.patientTable th,
-.patientTable td {
   text-align: center;
   padding: 8px;
 }
+
+.assessmentHeader {
+  font-family: "Amazon Ember",sans-serif;
+  font-style: bold;
+  font-size: 15px;
+}
+/* 
+
+/* .patientTable th,
+.patientTable td {
+  text-align: center;
+  padding: 8px;
+} */
 
 /* HOMEPAGE */
 .cards {

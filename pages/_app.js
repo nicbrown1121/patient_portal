@@ -1,4 +1,5 @@
 "use client";
+import "bootstrap/dist/css/bootstrap.css";
 import Link from "next/link";
 import UserContext, { UserReducer } from "../contexts/UserContext";
 import React, { useState, useReducer } from "react";
