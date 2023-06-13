@@ -16,8 +16,6 @@ function PatientFunc() {
 
   const patients = queryClient.getQueryData(["patient"]);
 
-  console.log("patients", patients);
-
   const handleAssessment = (patientId) => {
     router.push(`/patient/${patientId}`);
   };

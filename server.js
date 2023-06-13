@@ -31,7 +31,6 @@ app.post("/api/login", async (req, res) => {
   const token = jwt.sign(payload, "patientPortalSecret", {
     expiresIn: 86400, // expires in 24 hours
   });
-  console.log("token from /api/login", token);
   // return the information including token as JSON
   res.status(200).json({ auth: true, token: token });
   res.end();
@@ -53,8 +52,7 @@ app.post("/api/register", async (req, res) => {
     res.status(201).json({ username: username });
     res.end();
   } catch (e) {
-    console.log("ERROR IN /register route");
-    console.error("Error: ", e);
+    console.error("Error in /register route: ", e);
     res.end();
   }
 });
@@ -62,7 +60,6 @@ app.post("/api/register", async (req, res) => {
 //To use middleware function that checks and verifies the
 //token on the request header before proceeding to endpoint logic
 app.get("/api/patient", verifyToken, async (req, res) => {
-  console.log("patient route");
   try {
     const patients = await Patient.findAll();
     // If the token is successfully verified, we can send the protected info
@@ -74,7 +71,7 @@ app.get("/api/patient", verifyToken, async (req, res) => {
     });
     res.end();
   } catch (error) {
-    console.log("error on route");
+    console.log("error on /patient route");
     console.error(error);
     res.status(500).json({ message: "Server error" });
     res.end();
@@ -82,10 +79,7 @@ app.get("/api/patient", verifyToken, async (req, res) => {
 });
 
 app.get("/api/patient/:patientId", async (req, res) => {
-  console.log("assessments route");
   const patientId = req.params.patientId;
-  console.log({ patientId });
-
   try {
     const assessments = await Assessment.findAll({
       where: { patientId: patientId },
@@ -102,10 +96,33 @@ app.get("/api/patient/:patientId", async (req, res) => {
       message: "Assessments for patient " + patientId,
       userId: req.userId,
     });
+    res.end();
   } catch (error) {
     console.log("error on route");
     console.error(error);
     res.status(500).json({ message: "Server error" });
+    res.end();
+  }
+});
+
+app.post("/api/patient/:patientId", async (req, res) => {
+  const { patientId } = req.params;
+  const { type, text, username } = req.body;
+  const user = await Worker.findOne({ where: { username } });
+  try {
+    if (type === "note") {
+      const note = await Note.create({
+        patientId: patientId,
+        text: text,
+        workerId: user.id,
+      });
+      res.status(201).json({ note });
+    }
+    res.end();
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+    res.end();
   }
 });
 

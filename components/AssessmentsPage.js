@@ -12,9 +12,6 @@ function AssessmentsPage() {
   const router = useRouter();
 
   const patients = queryClient.getQueryData(["patient"]);
-
-  console.log({ patients });
-
   let seenPatients = {};
   let unseenPatients = {};
 
@@ -26,7 +23,6 @@ function AssessmentsPage() {
   }
 
   const goToPatient = (patientId) => {
-    console.log("patientId in goToPatient", patientId);
     router.push(`/patient/${patientId}`);
   };
 

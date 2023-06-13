@@ -5,9 +5,7 @@ export function checkTokenExpiration() {
 
   if (token) {
     const decodedToken = jwt.decode(token);
-    console.log({ decodedToken });
     const currentTime = Date.now() / 1000;
-    console.log({ currentTime });
     if (decodedToken.exp < currentTime) {
       // Token has expired
       localStorage.removeItem("token");

@@ -33,7 +33,6 @@ function RegisterForm() {
     // Now parse the text as JSON
     try {
       const data = JSON.parse(text);
-      console.log("data", data);
       if (response.ok) {
         // set username on context to prepopulate that field on login page
         dispatch({

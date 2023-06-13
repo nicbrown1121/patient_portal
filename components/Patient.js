@@ -26,16 +26,63 @@ function Patient({ id }) {
     );
   }
 
-  console.log({ currPatient, allPatients });
-
   const bmi =
     (currPatient.weight / (currPatient.height * currPatient.height)) * 703;
 
+  // async function fetchNotes() {
+  //   const res = await fetch(`http://localhost:3001/api/patient/${id}/notes`);
+  //   console.log("res", res);
+  //   if (!res.ok) {
+  //     console.log("Failed to fetch notes data");
+  //   }
+  //   const data = await res.json();
+  //   console.log({ data });
+  //   return data;
+  // }
+
+  // const {
+  //   data: notesData,
+  //   status: notesStatus,
+  //   fetchStatus: notesFetchStatus,
+  // } = useQuery({
+  //   queryKey: ["notes"],
+  //   queryFn: fetchNotes,
+  //   cacheTime: "10000",
+  // });
+
+  // console.log({ notesData });
+
+  // if (notesStatus === "success") {
+  //   notesObj = notesData;
+  // }
+
+  // async function fetchAssessments() {
+  //   const res = await fetch(
+  //     `http://localhost:3001/api/patient/${id}/assessments`
+  //   );
+  //   console.log("res", res);
+  //   if (!res.ok) {
+  //     console.log("Failed to fetch assessment data");
+  //   }
+  //   const data = await res.json();
+  //   console.log({ data });
+  //   return data;
+  // }
+
+  // const {
+  //   data: assessmentsData,
+  //   status: assessmentsStatus,
+  //   fetchStatus: assessmentsFetchStatus,
+  // } = useQuery({
+  //   queryKey: ["assessments"],
+  //   queryFn: fetchAssessments,
+  //   cacheTime: "10000",
+  // });
+
   async function fetchNotesandAssessments() {
     const res = await fetch(`http://localhost:3001/api/patient/${id}`);
-    console.log("res", res);
     if (!res.ok) {
-      console.log("Failed to fetch assessment data");
+      console.log("Failed to fetch notes data");
     }
     const data = await res.json();
     console.log({ data });
@@ -48,7 +95,7 @@ function Patient({ id }) {
     status,
     fetchStatus,
   } = useQuery({
-    queryKey: ["assessment"],
+    queryKey: ["notesassessments"],
     queryFn: fetchNotesandAssessments,
     cacheTime: "10000",
   });
@@ -61,30 +108,26 @@ function Patient({ id }) {
     setCreateModal(!createModal);
   };
 
-  const createNote = async () => {
-    // const username = user.username;
-    // const requestBody = { username, note };
-    // try {
-    //   // Send the POST request to the server
-    //   const response = await fetch("http://localhost:3001/api/patient", {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //     body: JSON.stringify(requestBody),
-    //   });
-    //   // Handle HTTP response
-    //   if (response.ok) {
-    //     console.log("Note created successfully!");
-    //     // Reset the modal fields and close the modal
-    //     handleClose();
-    //   } else {
-    //     console.error("Failed to create note.");
-    //   }
-    // } catch (error) {
-    //   console.error("An error occurred while creating the note:", error);
-    //}
-  };
+  async function createNote() {
+    const response = await fetch(`http://localhost:3001/api/patient/${id}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        type: "note",
+        text: note,
+        username: user.username,
+      }),
+    });
+    if (response.ok) {
+      console.log("Note created successfully");
+      handleClose();
+      queryClient.invalidateQueries(["notesassessments"]); // Invalidate the assessment query to fetch updated data
+    } else {
+      console.error("Failed to create note.");
+    }
+  }
 
   const handleClose = () => {
     setCreateModal(false);
@@ -109,7 +152,7 @@ function Patient({ id }) {
           <Form>
             <Form.Group controlId="username">
               <Form.Label>Username:</Form.Label>
-              <Form.Control type="text" defaultValue={user.username} />
+              <Form.Control type="text" defaultValue={user.username} disabled />
             </Form.Group>
             <Form.Group controlId="note">
               <Form.Label>Note:</Form.Label>

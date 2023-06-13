@@ -23,7 +23,6 @@ export default function HomePage() {
 
     //401 status - lacking valid authentication credentials
     // if (res.status === "401") {
-    //   console.log({ res });
     //   // remove token from local storage
     //   localStorage.removeItem("token");
     //   // redirect user to login page
@@ -53,12 +52,10 @@ export default function HomePage() {
   //   // Set 'enabled' to true only when the initial patient data has been loaded successfully
   // });
 
-  console.log({ status, isLoading, fetchStatus });
   let seenPatients = {};
   let unseenPatients = {};
 
   // if (patientData !== undefined && status === "success") {
-  //   console.log("patientData", patientData);
   //   seenPatients = patientData.data.filter((patient) => patient.seen);
   //   unseenPatients = patientData.data.filter((patient) => !patient.seen);
   // }
