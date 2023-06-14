@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import UserContext from "../contexts/UserContext";
 import { useQuery } from "@tanstack/react-query";
 import { checkTokenExpiration } from "../pages/auth";
+// import { fetchPatients } from "./api/api";
 
 //check if the user is logged in whenever user changes.
 // If they aren't logged in, navigate to the login page.
@@ -20,14 +21,6 @@ export default function HomePage() {
         Authorization: `Bearer ${user.token}`,
       },
     });
-
-    //401 status - lacking valid authentication credentials
-    // if (res.status === "401") {
-    //   // remove token from local storage
-    //   localStorage.removeItem("token");
-    //   // redirect user to login page
-    //   return res.redirect("/login");
-    // }
 
     const data = await res.json();
     return data;
@@ -55,10 +48,6 @@ export default function HomePage() {
   let seenPatients = {};
   let unseenPatients = {};
 
-  // if (patientData !== undefined && status === "success") {
-  //   seenPatients = patientData.data.filter((patient) => patient.seen);
-  //   unseenPatients = patientData.data.filter((patient) => !patient.seen);
-  // }
   if (patientData !== undefined) {
     if (patientData.auth === false) {
       router.push("/login");

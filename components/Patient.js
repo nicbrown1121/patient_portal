@@ -6,6 +6,7 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { checkTokenExpiration } from "../pages/auth";
 import { formatDate } from "./utils/formatDate";
+import { fetchNotesandAssessments } from "./api/api";
 
 function Patient({ id }) {
   const { user, dispatch } = useContext(UserContext);
@@ -13,6 +14,7 @@ function Patient({ id }) {
   const [note, setNote] = useState("");
   const queryClient = useQueryClient();
   let notesObj = {};
+  let assessmentObj = {};
   let currPatient = {};
 
   useEffect(() => {
@@ -79,16 +81,6 @@ function Patient({ id }) {
   //   cacheTime: "10000",
   // });
 
-  async function fetchNotesandAssessments() {
-    const res = await fetch(`http://localhost:3001/api/patient/${id}`);
-    if (!res.ok) {
-      console.log("Failed to fetch notes data");
-    }
-    const data = await res.json();
-    console.log({ data });
-    return data;
-  }
-
   const {
     data: notesAndAssessments,
     isLoading,
@@ -96,14 +88,16 @@ function Patient({ id }) {
     fetchStatus,
   } = useQuery({
     queryKey: ["notesassessments"],
-    queryFn: fetchNotesandAssessments,
+    queryFn: () => fetchNotesandAssessments(parseInt(id, 10)),
     cacheTime: "10000",
   });
 
+  console.log({ notesAndAssessments });
+
   if (status === "success") {
     notesObj = notesAndAssessments.notes;
+    assessmentObj = notesAndAssessments.assessments;
   }
-
   const handleCreateNote = () => {
     setCreateModal(!createModal);
   };
@@ -185,7 +179,17 @@ function Patient({ id }) {
               className="assessmentButton"
               onClick={handleCreateAssessment}
             >
-              Create Assessment
+              {assessmentObj.length === 0 ? (
+                <>Complete Assessment</>
+              ) : (
+                "Assessment Completed" &&
+                Object.values(assessmentObj).map((assessment) => (
+                  <tr className="row" key={note.id}>
+                    <td>Completed on: {formatDate(assessment.createdAt)}</td>
+                    {/* <td>{assessment.text}</td> */}
+                  </tr>
+                ))
+              )}
             </button>
           </div>
           <div className="patientCards" style={{ overflowY: "scroll" }}>

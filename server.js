@@ -29,7 +29,7 @@ app.post("/api/login", async (req, res) => {
   // If user is found and password is right, create a token
   const payload = { id: user.id, username: user.username };
   const token = jwt.sign(payload, "patientPortalSecret", {
-    expiresIn: 86400, // expires in 24 hours
+    expiresIn: 90000, // expires in 24 hours
   });
   // return the information including token as JSON
   res.status(200).json({ auth: true, token: token });
