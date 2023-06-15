@@ -1,5 +1,7 @@
 "use strict";
 const { Model } = require("sequelize");
+// const Patient = require("./patient");
+
 module.exports = (sequelize, DataTypes) => {
   class Assessment extends Model {
     static associate(models) {
@@ -52,5 +54,20 @@ module.exports = (sequelize, DataTypes) => {
       modelName: "Assessment",
     }
   );
+
+  // Assessment.afterCreate(async (assessment) => {
+  //   console.log("in afterUPDATEEEEEE");
+  //   if (assessment.completed) {
+  //     const patient = await Patient.modelManager.Model.Patient.findOne({
+  //       where: {
+  //         id: assessment.patientId,
+  //       },
+  //     });
+
+  //     if (patient) {
+  //       await patient.update({ seen: true });
+  //     }
+  //   }
+  // });
   return Assessment;
 };

@@ -7,6 +7,21 @@ import Button from "react-bootstrap/Button";
 import { checkTokenExpiration } from "../pages/auth";
 import { formatDate } from "./utils/formatDate";
 import { fetchNotesandAssessments } from "./api/api";
+import { initialAssessmentState } from "./utils/initialStates";
+import {
+  frameSizeOptions,
+  weightTrendOptions,
+  acutePOIntakeOptions,
+  muscleMassOptions,
+  fatMassOptions,
+  hospitalizedLast30DaysOptions,
+} from "./utils/assessmentOptions";
+import {
+  getCurrentDate,
+  calculateReassessmentDate,
+  calculateSevenDaysFromReassess,
+  isOpenReassessment,
+} from "./utils/reassessmentDateCalc";
 
 function Patient({ id }) {
   const { user, dispatch } = useContext(UserContext);
@@ -14,48 +29,14 @@ function Patient({ id }) {
   const [createAssessmentModal, setCreateAssessmentModal] = useState(false);
   const [note, setNote] = useState("");
   const queryClient = useQueryClient();
-  const initialAssessmentState = {
-    medicalHistory: [],
-    frameSize: "",
-    weightTrend: "",
-    acutePOIntake: "",
-    muscleMass: "",
-    fatMass: "",
-    hospitalizedLast30Days: "",
-    skinIntegrity: "",
-    comment: "",
-    recommendations: "",
-  };
   const [createAssessmentState, setCreateAssessmentState] = useState(
     initialAssessmentState
   );
 
-  // Enum options from the backend
-  const frameSizeOptions = ["small", "medium", "large"];
-  const weightTrendOptions = ["loss", "stable", "gain"];
-  const acutePOIntakeOptions = [
-    ">75% of needs",
-    "<= 75% of needs",
-    "<50% of needs",
-  ];
-  const muscleMassOptions = [
-    "No depletion",
-    "Mild depletion in 1-3 areas",
-    "Moderate depletion in 1-3 areas",
-    "Severe depletion in 1-3 areas",
-  ];
-  const fatMassOptions = [
-    "No depletion",
-    "Mild depletion in 1-3 areas",
-    "Moderate depletion in 1-3 areas",
-    "Severe depletion in 1-3 areas",
-  ];
-  const hospitalizedLast30DaysOptions = ["Yes", "No"];
-
   let notesObj = {};
   let assessmentObj = {};
   let currPatient = {};
-  let reassessmentDate = new Date();
+  const currDate = getCurrentDate();
 
   useEffect(() => {
     checkTokenExpiration();
@@ -129,24 +110,23 @@ function Patient({ id }) {
   } = useQuery({
     queryKey: ["notesassessments"],
     queryFn: () => fetchNotesandAssessments(parseInt(id, 10)),
-    cacheTime: "10000",
+    cacheTime: "1000000",
   });
 
   if (status === "success") {
     notesObj = notesAndAssessments.notes;
     assessmentObj = notesAndAssessments.assessments;
   }
+  let reassessmentDate = calculateReassessmentDate(assessmentObj);
+  const sevenDaysFromReassess =
+    calculateSevenDaysFromReassess(reassessmentDate);
+  let openReassessment = isOpenReassessment(
+    currDate,
+    sevenDaysFromReassess,
+    reassessmentDate
+  );
 
-  console.log({ notesAndAssessments, assessmentObj });
-
-  if (assessmentObj.length >= 1) {
-    const lastAssessment = assessmentObj[assessmentObj.length - 1];
-    console.log({ lastAssessment });
-    const lastAssessmentDate = new Date(lastAssessment.createdAt);
-    console.log({ lastAssessmentDate });
-    reassessmentDate.setDate(lastAssessmentDate.getDate() + 30);
-    console.log({ reassessmentDate });
-  }
+  console.log({ reassessmentDate, sevenDaysFromReassess, openReassessment });
 
   const handleCreateNote = () => {
     setCreateNoteModal(!createNoteModal);
@@ -258,9 +238,13 @@ function Patient({ id }) {
         </Modal.Header>
         <Modal.Body>
           <Form>
-            <Form.Group controlId="username">
-              <Form.Label>User:</Form.Label>
-              <Form.Control type="text" defaultValue={user.username} disabled />
+            <Form.Group>
+              <Form.Label disabled style={{ fontStyle: "bold" }}>
+                Patient: {currPatient.name}{" "}
+              </Form.Label>
+            </Form.Group>
+            <Form.Group>
+              <Form.Label disabled>User: {user.username} </Form.Label>
             </Form.Group>
 
             <Form.Group name="frameSize">
@@ -443,7 +427,7 @@ function Patient({ id }) {
       </div>
       <div className="patientPage">
         <div className="notesColumn">
-          <div className="patientCards">
+          <div className="assessments">
             <h2>Assessments</h2>
             {assessmentObj && assessmentObj.length === 0 ? (
               <button
@@ -455,19 +439,31 @@ function Patient({ id }) {
             ) : (
               <>
                 {Object.values(assessmentObj).map((assessment) => (
-                  <div className="row" key={note.id}>
+                  <div className="row" key={assessment.id}>
                     <div style={{ color: "#999999" }}>
                       Completed On: {formatDate(assessment.createdAt)}
                     </div>
                   </div>
                 ))}
-                <div className="reassessmentDueDate">
-                  Reassessment Due: {formatDate(reassessmentDate)}
+                <div>
+                  <div className="reassessmentDueDate">
+                    Reassessment Due: {formatDate(reassessmentDate)}
+                  </div>
+                  <div>
+                    {openReassessment && (
+                      <button
+                        className="reassessmentButton"
+                        onClick={handleCreateAssessment}
+                      >
+                        Open Reassessment
+                      </button>
+                    )}
+                  </div>
                 </div>
               </>
             )}
           </div>
-          <div className="patientCards" style={{ overflowY: "scroll" }}>
+          <div className="assessments" style={{ overflowY: "scroll" }}>
             <h2>Notes</h2>
             <button className="patientButton" onClick={handleCreateNote}>
               Create Note
@@ -508,6 +504,16 @@ function Patient({ id }) {
             <h2>Dietary </h2>
             <ol>Diet Order: {currPatient.dietOrder} </ol>
             <ol>Fluid Restriction: {currPatient.fluidRestriction} </ol>
+            {assessmentObj.length >= 1 && (
+              <ol>
+                Dietitian Recommendations:
+                <ol style={{ fontStyle: "italic" }}>
+                  {assessmentObj.map(
+                    (assessment) => assessment.recommendations
+                  )}
+                </ol>
+              </ol>
+            )}
           </div>
         </div>
       </div>

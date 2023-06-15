@@ -146,6 +146,10 @@ app.post("/api/patient/:patientId", async (req, res) => {
         comment: comment,
         recommendations: recommendations,
       });
+      const patient = await Patient.findByPk(patientId);
+      const reassessmentDate = new Date();
+      reassessmentDate.setMonth(reassessmentDate.getMonth() + 1);
+      await patient.update({ seen: true, reassessmentDate: reassessmentDate });
       res.status(201).json({ assessment: newAssessment });
     } else {
       res.status(400).json({ message: "Invalid type" });
