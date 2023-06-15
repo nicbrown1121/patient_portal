@@ -233,3 +233,26 @@
   margin-bottom: 10px;
 }
 
+
+.userLabel {
+  display: inline-block !important;
+  width: 80px; /* Adjust the width as needed */
+  margin-right: 10px; /* Adjust the margin as needed */
+}
+
+.reassessmentDueDate {
+  white-space: nowrap; 
+  border: 1px solid #d5d9d9;
+  border-radius: 8px;
+  box-shadow: rgba(213, 217, 217, .5) 0 2px 5px 0;
+  color: #0f1111;
+  display: inline-block;
+  font-family: "Amazon Ember",sans-serif;
+  font-size: 15px;
+  font-style: bold;
+  line-height: 29px;
+  padding: 0 20px; 
+  text-align: center;
+  min-width: 100px;
+  background-color: #ceeeee;
+}

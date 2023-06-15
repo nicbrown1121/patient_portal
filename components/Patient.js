@@ -10,12 +10,52 @@ import { fetchNotesandAssessments } from "./api/api";
 
 function Patient({ id }) {
   const { user, dispatch } = useContext(UserContext);
-  const [createModal, setCreateModal] = useState(false);
+  const [createNoteModal, setCreateNoteModal] = useState(false);
+  const [createAssessmentModal, setCreateAssessmentModal] = useState(false);
   const [note, setNote] = useState("");
   const queryClient = useQueryClient();
+  const initialAssessmentState = {
+    medicalHistory: [],
+    frameSize: "",
+    weightTrend: "",
+    acutePOIntake: "",
+    muscleMass: "",
+    fatMass: "",
+    hospitalizedLast30Days: "",
+    skinIntegrity: "",
+    comment: "",
+    recommendations: "",
+  };
+  const [createAssessmentState, setCreateAssessmentState] = useState(
+    initialAssessmentState
+  );
+
+  // Enum options from the backend
+  const frameSizeOptions = ["small", "medium", "large"];
+  const weightTrendOptions = ["loss", "stable", "gain"];
+  const acutePOIntakeOptions = [
+    ">75% of needs",
+    "<= 75% of needs",
+    "<50% of needs",
+  ];
+  const muscleMassOptions = [
+    "No depletion",
+    "Mild depletion in 1-3 areas",
+    "Moderate depletion in 1-3 areas",
+    "Severe depletion in 1-3 areas",
+  ];
+  const fatMassOptions = [
+    "No depletion",
+    "Mild depletion in 1-3 areas",
+    "Moderate depletion in 1-3 areas",
+    "Severe depletion in 1-3 areas",
+  ];
+  const hospitalizedLast30DaysOptions = ["Yes", "No"];
+
   let notesObj = {};
   let assessmentObj = {};
   let currPatient = {};
+  let reassessmentDate = new Date();
 
   useEffect(() => {
     checkTokenExpiration();
@@ -92,14 +132,24 @@ function Patient({ id }) {
     cacheTime: "10000",
   });
 
-  console.log({ notesAndAssessments });
-
   if (status === "success") {
     notesObj = notesAndAssessments.notes;
     assessmentObj = notesAndAssessments.assessments;
   }
+
+  console.log({ notesAndAssessments, assessmentObj });
+
+  if (assessmentObj.length >= 1) {
+    const lastAssessment = assessmentObj[assessmentObj.length - 1];
+    console.log({ lastAssessment });
+    const lastAssessmentDate = new Date(lastAssessment.createdAt);
+    console.log({ lastAssessmentDate });
+    reassessmentDate.setDate(lastAssessmentDate.getDate() + 30);
+    console.log({ reassessmentDate });
+  }
+
   const handleCreateNote = () => {
-    setCreateModal(!createModal);
+    setCreateNoteModal(!createNoteModal);
   };
 
   async function createNote() {
@@ -123,17 +173,44 @@ function Patient({ id }) {
     }
   }
 
+  async function createAssessment() {
+    console.log("in create assessment");
+    const requestBody = { ...createAssessmentState };
+    const response = await fetch(`http://localhost:3001/api/patient/${id}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        type: "assessment",
+        completed: true,
+        username: user.username,
+        requestBody,
+      }),
+    });
+    if (response.ok) {
+      console.log("Assessment created successfully");
+      handleClose();
+      queryClient.invalidateQueries(["notesassessments"]); // Invalidate the assessment query to fetch updated data
+    } else {
+      console.error("Failed to create assessment.");
+    }
+  }
+
   const handleClose = () => {
-    setCreateModal(false);
+    setCreateNoteModal(false);
+    setCreateAssessmentModal(false);
   };
 
-  const handleCreateAssessment = () => {};
+  const handleCreateAssessment = () => {
+    setCreateAssessmentModal(!createAssessmentModal);
+  };
 
   return (
     <div>
-      {/* Modal */}
+      {/* Note Modal */}
       <Modal
-        show={createModal}
+        show={createNoteModal}
         onHide={handleClose}
         backdrop="static"
         keyboard={false}
@@ -168,6 +245,199 @@ function Patient({ id }) {
           </Button>
         </Modal.Footer>
       </Modal>
+      {/* Assessment Modal */}
+      <Modal
+        show={createAssessmentModal}
+        onHide={handleClose}
+        backdrop="static"
+        keyboard={false}
+        animation={false}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Create Assessment</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group controlId="username">
+              <Form.Label>User:</Form.Label>
+              <Form.Control type="text" defaultValue={user.username} disabled />
+            </Form.Group>
+
+            <Form.Group name="frameSize">
+              <Form.Label>Frame Size: </Form.Label>
+              <select
+                value={createAssessmentState.frameSize}
+                onChange={(e) =>
+                  setCreateAssessmentState({
+                    ...createAssessmentState,
+                    frameSize: e.target.value,
+                  })
+                }
+              >
+                <option value="">Select an option</option>
+                {frameSizeOptions.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </Form.Group>
+
+            <Form.Group name="weightTrend">
+              <Form.Label>Weight Trend: </Form.Label>
+              <select
+                value={createAssessmentState.weightTrend}
+                onChange={(e) =>
+                  setCreateAssessmentState({
+                    ...createAssessmentState,
+                    weightTrend: e.target.value,
+                  })
+                }
+              >
+                <option value="">Select an option</option>
+                {weightTrendOptions.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </Form.Group>
+
+            <Form.Group name="POIntake">
+              <Form.Label>Recent PO Intake: </Form.Label>
+              <select
+                value={createAssessmentState.acutePOIntake}
+                onChange={(e) =>
+                  setCreateAssessmentState({
+                    ...createAssessmentState,
+                    acutePOIntake: e.target.value,
+                  })
+                }
+              >
+                <option value="">Select an option</option>
+                {acutePOIntakeOptions.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </Form.Group>
+
+            <Form.Group name="muscleMass">
+              <Form.Label>Muscle Mass: </Form.Label>
+              <select
+                value={createAssessmentState.muscleMass}
+                onChange={(e) =>
+                  setCreateAssessmentState({
+                    ...createAssessmentState,
+                    muscleMass: e.target.value,
+                  })
+                }
+              >
+                <option value="">Select an option</option>
+                {muscleMassOptions.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </Form.Group>
+
+            <Form.Group name="fatMass">
+              <Form.Label>Fat Mass: </Form.Label>
+              <select
+                value={createAssessmentState.fatMass}
+                onChange={(e) =>
+                  setCreateAssessmentState({
+                    ...createAssessmentState,
+                    fatMass: e.target.value,
+                  })
+                }
+              >
+                <option value="">Select an option</option>
+                {fatMassOptions.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </Form.Group>
+
+            <Form.Group name="fatMass">
+              <Form.Label>Hospitalized within Last 30 Days: </Form.Label>
+              <select
+                value={createAssessmentState.hospitalizedLast30Days}
+                onChange={(e) =>
+                  setCreateAssessmentState({
+                    ...createAssessmentState,
+                    hospitalizedLast30Days: e.target.value,
+                  })
+                }
+              >
+                <option value="">Select an option</option>
+                {hospitalizedLast30DaysOptions.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </Form.Group>
+
+            <Form.Group name="skinIntegrity">
+              <Form.Label>Skin Integity: </Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={3}
+                value={createAssessmentState.skinIntegrity}
+                onChange={(e) =>
+                  setCreateAssessmentState({
+                    ...createAssessmentState,
+                    skinIntegrity: e.target.value,
+                  })
+                }
+              />
+            </Form.Group>
+
+            <Form.Group name="comment">
+              <Form.Label>Comment: </Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={3}
+                value={createAssessmentState.comment}
+                onChange={(e) =>
+                  setCreateAssessmentState({
+                    ...createAssessmentState,
+                    comment: e.target.value,
+                  })
+                }
+              />
+            </Form.Group>
+
+            <Form.Group name="recommendation">
+              <Form.Label>Recommendations: </Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={3}
+                value={createAssessmentState.recommendations}
+                onChange={(e) =>
+                  setCreateAssessmentState({
+                    ...createAssessmentState,
+                    recommendations: e.target.value,
+                  })
+                }
+              />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="primary" onClick={createAssessment}>
+            Submit
+          </Button>
+          <Button variant="secondary" onClick={handleClose}>
+            Cancel
+          </Button>
+        </Modal.Footer>
+      </Modal>
       <div className="patientInfo">
         <h1 style={{ textAlign: "center" }}>{currPatient.name}</h1>
       </div>
@@ -175,22 +445,27 @@ function Patient({ id }) {
         <div className="notesColumn">
           <div className="patientCards">
             <h2>Assessments</h2>
-            <button
-              className="assessmentButton"
-              onClick={handleCreateAssessment}
-            >
-              {assessmentObj.length === 0 ? (
-                <>Complete Assessment</>
-              ) : (
-                "Assessment Completed" &&
-                Object.values(assessmentObj).map((assessment) => (
-                  <tr className="row" key={note.id}>
-                    <td>Completed on: {formatDate(assessment.createdAt)}</td>
-                    {/* <td>{assessment.text}</td> */}
-                  </tr>
-                ))
-              )}
-            </button>
+            {assessmentObj && assessmentObj.length === 0 ? (
+              <button
+                className="assessmentButton"
+                onClick={handleCreateAssessment}
+              >
+                Complete Assessment
+              </button>
+            ) : (
+              <>
+                {Object.values(assessmentObj).map((assessment) => (
+                  <div className="row" key={note.id}>
+                    <div style={{ color: "#999999" }}>
+                      Completed On: {formatDate(assessment.createdAt)}
+                    </div>
+                  </div>
+                ))}
+                <div className="reassessmentDueDate">
+                  Reassessment Due: {formatDate(reassessmentDate)}
+                </div>
+              </>
+            )}
           </div>
           <div className="patientCards" style={{ overflowY: "scroll" }}>
             <h2>Notes</h2>

@@ -107,7 +107,20 @@ app.get("/api/patient/:patientId", async (req, res) => {
 
 app.post("/api/patient/:patientId", async (req, res) => {
   const { patientId } = req.params;
-  const { type, text, username } = req.body;
+  const { type, text, username, requestBody, completed } = req.body;
+  const {
+    frameSize,
+    weightTrend,
+    acutePOIntake,
+    muscleMass,
+    fatMass,
+    hospitalizedLast30Days,
+    skinIntegrity,
+    comment,
+    recommendations,
+  } = requestBody;
+  console.log({ type, requestBody, username, frameSize });
+
   const user = await Worker.findOne({ where: { username } });
   try {
     if (type === "note") {
@@ -117,6 +130,25 @@ app.post("/api/patient/:patientId", async (req, res) => {
         workerId: user.id,
       });
       res.status(201).json({ note });
+    } else if (type === "assessment") {
+      console.log("creating a new assessment");
+      const newAssessment = await Assessment.create({
+        patientId: patientId,
+        workerId: user.id,
+        completed: completed,
+        frameSize: frameSize,
+        weightTrend: weightTrend,
+        acutePOIntake: acutePOIntake,
+        muscleMass: muscleMass,
+        fatMass: fatMass,
+        hospitalizedLast30Days: hospitalizedLast30Days,
+        skinIntegrity: skinIntegrity,
+        comment: comment,
+        recommendations: recommendations,
+      });
+      res.status(201).json({ assessment: newAssessment });
+    } else {
+      res.status(400).json({ message: "Invalid type" });
     }
     res.end();
   } catch (error) {
