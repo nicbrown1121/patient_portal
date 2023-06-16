@@ -148,7 +148,7 @@ app.post("/api/patient/:patientId", async (req, res) => {
       });
       const patient = await Patient.findByPk(patientId);
       const reassessmentDate = new Date();
-      reassessmentDate.setMonth(reassessmentDate.getMonth() + 1);
+      reassessmentDate.setDate(reassessmentDate.getDate() + 7);
       await patient.update({ seen: true, reassessmentDate: reassessmentDate });
       res.status(201).json({ assessment: newAssessment });
     } else {

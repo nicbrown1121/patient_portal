@@ -2,6 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import UserContext from "../contexts/UserContext";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Modal from "react-bootstrap/Modal";
+import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { checkTokenExpiration } from "../pages/auth";
@@ -19,7 +20,7 @@ import {
 import {
   getCurrentDate,
   calculateReassessmentDate,
-  calculateSevenDaysFromReassess,
+  calculateThreeDaysFromReassess,
   isOpenReassessment,
 } from "./utils/reassessmentDateCalc";
 
@@ -32,6 +33,7 @@ function Patient({ id }) {
   const [createAssessmentState, setCreateAssessmentState] = useState(
     initialAssessmentState
   );
+  const [editDiet, setEditDiet] = useState(false);
 
   let notesObj = {};
   let assessmentObj = {};
@@ -118,15 +120,15 @@ function Patient({ id }) {
     assessmentObj = notesAndAssessments.assessments;
   }
   let reassessmentDate = calculateReassessmentDate(assessmentObj);
-  const sevenDaysFromReassess =
-    calculateSevenDaysFromReassess(reassessmentDate);
+  const threeDaysFromReassess =
+    calculateThreeDaysFromReassess(reassessmentDate);
   let openReassessment = isOpenReassessment(
     currDate,
-    sevenDaysFromReassess,
+    threeDaysFromReassess,
     reassessmentDate
   );
 
-  console.log({ reassessmentDate, sevenDaysFromReassess, openReassessment });
+  console.log({ reassessmentDate, threeDaysFromReassess, openReassessment });
 
   const handleCreateNote = () => {
     setCreateNoteModal(!createNoteModal);
@@ -186,6 +188,10 @@ function Patient({ id }) {
     setCreateAssessmentModal(!createAssessmentModal);
   };
 
+  const handleEditDiet = () => {
+    setEditDiet(true);
+  };
+
   return (
     <div>
       {/* Note Modal */}
@@ -232,12 +238,13 @@ function Patient({ id }) {
         backdrop="static"
         keyboard={false}
         animation={false}
+        className="modalStyle"
       >
         <Modal.Header closeButton>
           <Modal.Title>Create Assessment</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form>
+          <Form className="formStyle">
             <Form.Group>
               <Form.Label disabled style={{ fontStyle: "bold" }}>
                 Patient: {currPatient.name}{" "}
@@ -501,18 +508,58 @@ function Patient({ id }) {
             <ol> BMI: {bmi.toFixed(2)} </ol>
           </div>
           <div className="patientCards">
-            <h2>Dietary </h2>
-            <ol>Diet Order: {currPatient.dietOrder} </ol>
-            <ol>Fluid Restriction: {currPatient.fluidRestriction} </ol>
-            {assessmentObj.length >= 1 && (
-              <ol>
-                Dietitian Recommendations:
-                <ol style={{ fontStyle: "italic" }}>
-                  {assessmentObj.map(
-                    (assessment) => assessment.recommendations
-                  )}
-                </ol>
-              </ol>
+            <div>
+              <h2>Dietary </h2>
+              <button className="patientButton" onClick={handleEditDiet}>
+                Edit
+              </button>
+            </div>
+            {editDiet ? (
+              <>
+                <Form.Label>Diet Order: </Form.Label>
+                <Form.Control
+                  as="textarea"
+                  defaultValue={currPatient.dietOrder}
+                  // value={createAssessmentState.skinIntegrity}
+                  // onChange={(e) =>
+                  //   setCreateAssessmentState({
+                  //     ...createAssessmentState,
+                  //     skinIntegrity: e.target.value,
+                  //   })
+                  //}
+                />
+                <Col sm={3}>
+                  <Form.Label htmlFor="email">Email</Form.Label>
+                  <Form.Control type="email" id="email" />
+                </Col>
+                <Form.Label>Fluid Restriction:</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  defaultValue={currPatient.dietOrder}
+                  // value={createAssessmentState.skinIntegrity}
+                  // onChange={(e) =>
+                  //   setCreateAssessmentState({
+                  //     ...createAssessmentState,
+                  //     skinIntegrity: e.target.value,
+                  //   })
+                  //}
+                />
+              </>
+            ) : (
+              <>
+                <ol>Diet Order: {currPatient.dietOrder} </ol>
+                <ol>Fluid Restriction: {currPatient.fluidRestriction} </ol>
+                {assessmentObj.length >= 1 && (
+                  <ol>
+                    Dietitian Recommendations:
+                    <ol style={{ fontStyle: "italic" }}>
+                      {assessmentObj.map(
+                        (assessment) => assessment.recommendations
+                      )}
+                    </ol>
+                  </ol>
+                )}
+              </>
             )}
           </div>
         </div>

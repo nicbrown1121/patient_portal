@@ -7,30 +7,29 @@ export function calculateReassessmentDate(assessmentObj) {
     const lastAssessment = assessmentObj[assessmentObj.length - 1];
     const lastAssessmentDate = new Date(lastAssessment.createdAt);
     const reassessmentDate = new Date(lastAssessmentDate);
-    reassessmentDate.setMonth(lastAssessmentDate.getMonth() + 1);
+    reassessmentDate.setDate(lastAssessmentDate.getDate() + 7);
     return reassessmentDate;
   }
   return null;
 }
 
-export function calculateSevenDaysFromReassess(reassessmentDate) {
+export function calculateThreeDaysFromReassess(reassessmentDate) {
   if (reassessmentDate) {
-    const sevenDaysFromReassess = new Date(reassessmentDate);
-    sevenDaysFromReassess.setDate(sevenDaysFromReassess.getDate() - 7);
-    sevenDaysFromReassess.setMonth(sevenDaysFromReassess.getMonth());
-    console.log("calc func", { sevenDaysFromReassess });
-    return sevenDaysFromReassess;
+    const threeDaysFromReassess = new Date(reassessmentDate);
+    threeDaysFromReassess.setDate(threeDaysFromReassess.getDate() - 3);
+    console.log("three days from reassess", { threeDaysFromReassess });
+    return threeDaysFromReassess;
   }
   return null;
 }
 
 export function isOpenReassessment(
   currDate,
-  sevenDaysFromReassess,
+  threeDaysFromReassess,
   reassessmentDate
 ) {
-  if (currDate && sevenDaysFromReassess && reassessmentDate) {
-    return currDate >= sevenDaysFromReassess && currDate <= reassessmentDate;
+  if (currDate && threeDaysFromReassess && reassessmentDate) {
+    return currDate >= threeDaysFromReassess && currDate <= reassessmentDate;
   }
   return false;
 }

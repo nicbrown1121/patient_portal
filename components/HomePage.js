@@ -7,7 +7,7 @@ import { fetchPatients } from "./api/api";
 import {
   getCurrentDate,
   calculateReassessmentDate,
-  calculateSevenDaysFromReassess,
+  calculateThreeDaysFromReassess,
   isOpenReassessment,
 } from "./utils/reassessmentDateCalc";
 //check if the user is logged in whenever user changes.
@@ -41,8 +41,8 @@ export default function HomePage() {
   } = useQuery({
     queryKey: ["patient"],
     queryFn: () => fetchPatients(user),
-    staleTime: "300000",
-    cacheTime: "300000",
+    // staleTime: "300000",
+    // cacheTime: "300000",
   });
 
   console.log({ patientData });
@@ -72,17 +72,17 @@ export default function HomePage() {
 
   if (seenPatients.length > 0) {
     reassessmentCount = seenPatients.reduce((count, patient) => {
-      const sevenDaysFromReassess = calculateSevenDaysFromReassess(
+      const threeDaysFromReassess = calculateThreeDaysFromReassess(
         patient.reassessmentDate
       );
       let openReassessment = isOpenReassessment(
         currDate,
-        sevenDaysFromReassess,
+        threeDaysFromReassess,
         patient.reassessmentDate
       );
 
       if (openReassessment) {
-        return count + 1; // Increment count if reassessment is within seven days
+        return count + 1; // Increment count if reassessment is within three days
       } else {
         return count; // No change in count
       }
@@ -120,7 +120,7 @@ export default function HomePage() {
             <div className="initialColumn">
               {/* DISPLAY NUMBER OF PATIENTS WITH RD NOTE */}
               <div className="reassessNumber">{reassessmentCount} </div>
-              <div className="reassessmentDue">Reassessments Due in 7 Days</div>
+              <div className="reassessmentDue">Reassessments Due in 3 Days</div>
             </div>
           </div>
         </div>

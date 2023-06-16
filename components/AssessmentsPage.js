@@ -6,7 +6,7 @@ import { formatDate } from "./utils/formatDate";
 import { Container, Row, Col } from "react-bootstrap";
 import {
   getCurrentDate,
-  calculateSevenDaysFromReassess,
+  calculateThreeDaysFromReassess,
   isOpenReassessment,
 } from "./utils/reassessmentDateCalc";
 // import { checkTokenExpiration } from "../pages/auth";
@@ -20,7 +20,7 @@ function AssessmentsPage() {
   const patients = queryClient.getQueryData(["patient"]);
   let seenPatients = {};
   let unseenPatients = {};
-  let reassessmentsInSevenDays = {};
+  let reassessmentInThreeDays = {};
 
   if (!patients) {
     return <div>Loading...</div>;
@@ -30,19 +30,19 @@ function AssessmentsPage() {
   }
 
   if (seenPatients.length > 0) {
-    reassessmentsInSevenDays = seenPatients.filter((patient) => {
-      const sevenDaysFromReassess = calculateSevenDaysFromReassess(
+    reassessmentInThreeDays = seenPatients.filter((patient) => {
+      const threeDaysFromReassess = calculateThreeDaysFromReassess(
         patient.reassessmentDate
       );
       let openReassessment = isOpenReassessment(
         currDate,
-        sevenDaysFromReassess,
+        threeDaysFromReassess,
         patient.reassessmentDate
       );
       return openReassessment;
     });
   }
-  console.log(reassessmentsInSevenDays);
+  console.log(reassessmentInThreeDays);
 
   const goToPatient = (patientId) => {
     router.push(`/patient/${patientId}`);
@@ -50,57 +50,21 @@ function AssessmentsPage() {
 
   return (
     <div>
-      <h3 style={{ fontSize: "30px", paddingTop: "25px", paddingLeft: "20px" }}>
+      <h3 style={{ fontSize: "30px", paddingTop: "30px", paddingLeft: "80px" }}>
         Initial Assessments Due{" "}
       </h3>
-      <div className="patientCard">
-        <Container>
-          <Row className="assessmentHeader" style={{ fontStyle: "bold" }}>
-            <Col>Patient Name</Col>
-            <Col>DOB</Col>
-            <Col>MRN</Col>
-            <Col>Location</Col>
-          </Row>
-          {patients &&
-            unseenPatients.map((patient) => (
-              <Row className="row" key={patient.id}>
-                <Col>{patient.name}</Col>
-                <Col>{formatDate(patient.dateOfBirth)}</Col>
-                <Col>{patient.id}</Col>
-                <Col>{patient.location}</Col>
-                <Col>
-                  <button
-                    className="patientButton"
-                    onClick={() => goToPatient(patient.id)}
-                  >
-                    Go to Patient
-                  </button>
-                </Col>
-              </Row>
-            ))}
-          {/* </Row> */}
-        </Container>
-      </div>
-      <h3 style={{ fontSize: "30px", paddingTop: "25px", paddingLeft: "20px" }}>
-        Reassessments Due{" "}
-      </h3>
-      <div className="patientCard">
-        <Container>
-          <Row className="patientTable">
-            <Col>
-              <h6>Patient Name</h6>
-            </Col>
-            <Col>
-              <h6>DOB</h6>
-            </Col>
-            <Col>
-              <h6>MRN</h6>
-            </Col>
-            <Col>
-              <h6>Location</h6>
-            </Col>
-            {reassessmentsInSevenDays &&
-              reassessmentsInSevenDays.map((patient) => (
+      <div style={{ display: "flex", justifyContent: "center" }}>
+        <div className="patientCard">
+          <Container>
+            <Row className="rowHeader">
+              <Col>Patient Name</Col>
+              <Col>DOB</Col>
+              <Col>MRN</Col>
+              <Col>Location</Col>
+              <Col></Col>
+            </Row>
+            {patients &&
+              unseenPatients.map((patient) => (
                 <Row className="row" key={patient.id}>
                   <Col>{patient.name}</Col>
                   <Col>{formatDate(patient.dateOfBirth)}</Col>
@@ -116,35 +80,63 @@ function AssessmentsPage() {
                   </Col>
                 </Row>
               ))}
-          </Row>
-        </Container>
+            {/* </Row> */}
+          </Container>
+        </div>
+      </div>
+      <h3 style={{ fontSize: "30px", paddingTop: "25px", paddingLeft: "80px" }}>
+        Reassessments Due{" "}
+      </h3>
+      <div style={{ display: "flex", justifyContent: "center" }}>
+        <div className="patientCard">
+          <Container>
+            <Row className="rowHeader">
+              <Col>Patient Name</Col>
+              <Col>DOB</Col>
+              <Col>MRN</Col>
+              <Col>Location</Col>
+              <Col></Col>
+              {reassessmentInThreeDays.length > 0 &&
+                reassessmentInThreeDays.map((patient) => (
+                  <Row className="row" key={patient.id}>
+                    <Col>{patient.name}</Col>
+                    <Col>{formatDate(patient.dateOfBirth)}</Col>
+                    <Col>{patient.id}</Col>
+                    <Col>{patient.location}</Col>
+                    <Col>
+                      <button
+                        className="patientButton"
+                        onClick={() => goToPatient(patient.id)}
+                      >
+                        Go to Patient
+                      </button>
+                    </Col>
+                  </Row>
+                ))}
+            </Row>
+          </Container>
+        </div>
       </div>
       <h3
         style={{
           fontSize: "30px",
           paddingTop: "40px",
-          paddingLeft: "20px",
+          paddingLeft: "80px",
           color: "#999999",
         }}
       >
-        {" "}
-        Assessments Completed{" "}
+        Assessments Completed
       </h3>
-      <div className="patientCard">
-        <Container>
-          <Row className="patientTable">
-            <Col>
-              <h6>Patient Name</h6>
-            </Col>
-            <Col>
-              <h6>DOB</h6>
-            </Col>
-            <Col>
-              <h6>MRN</h6>
-            </Col>
-            <Col>
-              <h6>Location</h6>
-            </Col>
+      <div style={{ display: "flex", justifyContent: "center" }}>
+        <div className="patientCard">
+          <Container>
+            <Row className="rowHeader">
+              <Col>Patient Name</Col>
+              <Col>DOB</Col>
+              <Col>MRN</Col>
+              <Col>Location</Col>
+              <Col></Col>
+            </Row>
             {seenPatients &&
               seenPatients.map((patient) => (
                 <Row className="row" key={patient.id}>
@@ -162,8 +154,8 @@ function AssessmentsPage() {
                   </Col>
                 </Row>
               ))}
-          </Row>
-        </Container>
+          </Container>
+        </div>
       </div>
     </div>
   );

@@ -74,10 +74,11 @@
 /* /PATIENT LIST */
 
 .patientCard {
-  /* justify-content: center; */
-  display: flex;
-  margin-left: 30px;
-  /* width: 80%; */
+  /* align-items: center; */
+  /* display: flex; */
+  width: 75%;
+  margin: 30px;
+  padding: 1.25rem;
   align-items: center;
   justify-content: center;
   border-style: round;
@@ -133,14 +134,26 @@
   /* padding: 8px;
   border-radius: 20px;
   box-shadow: 0 8px 8px -4px lightblue; */
+  /* background-image: linear-gradient(rgb(248, 248, 248), rgb(211, 213, 213)) ; */
+}
+.patientTable .grayBackground {
   background-image: linear-gradient(rgb(248, 248, 248), rgb(211, 213, 213)) ;
 }
 
-.assessmentHeader {
-  font-family: "Amazon Ember",sans-serif;
-  font-style: bold;
-  font-size: 15px;
+.rowHeader {
+  font-weight: 700;
+  font-size: 18px;
 }
+.patientListContainer {
+  /* padding: 1.25rem; */
+  text-align: center;
+  width: auto;
+  border-style: round;
+  border: 2px solid rgb(199, 201, 201);
+  border-radius: 20px;
+  box-shadow: 0 8px 8px -4px lightblue;
+}
+
 
 
 /* HOMEPAGE */
@@ -156,6 +169,7 @@
 .assessments {
   /* display: grid; */
   /* width: 80%; */
+  padding: 1.25rem;
   padding-top: 15px;
   height: 200px;
   text-align: center;
@@ -173,6 +187,7 @@
   cursor: pointer;
 }
 
+
 .assessmentCard {
   display: grid;
   text-align: center;
@@ -180,14 +195,11 @@
   justify-content: center;
   grid-template-columns: 1fr 1fr;
 }
-
 .assessmentColumn, .intitialColumn {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
-
-
 .reassessNumber, .initialNumber {
   font-size: 40px;
   font-style: bold;
@@ -201,6 +213,7 @@
   /* display: grid; */
   /* width: 80%; */
   /* height: 200px; */
+  padding: 1.25rem;
   text-align: center;
   align-items: center;
   justify-content: center;
@@ -254,4 +267,17 @@
   text-align: center;
   min-width: 100px;
   background-color: #ceeeee;
+}
+
+
+.modalStyle {
+  /* border: 1px solid #d5d9d9;
+  border-radius: 8px;
+  box-shadow: rgba(213, 217, 217, .5) 0 2px 5px 0; */
+}
+
+.formStyle {
+  margin-top: 10px;
+  font-family: "Amazon Ember",sans-serif;
+
 }
