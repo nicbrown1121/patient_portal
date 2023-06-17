@@ -107,20 +107,26 @@ export default function HomePage() {
 
   return (
     <div>
-      <h1 style={{ textAlign: "center" }}>Welcome, {user.username}!</h1>
-      <div className="cards">
-        <div className="assessments" onClick={handleAssessments}>
-          <h3> Today's Assessments</h3>
-          <div className="assessmentCard">
-            <div className="assessmentColumn">
-              {/* DISPLAY NUMBER OF PATIENTS WITHOUT RD NOTE */}
-              <div className="initialNumber">{unseenPatients.length}</div>
-              <div className="initialDue">Initial Assessments Due</div>
-            </div>
-            <div className="initialColumn">
-              {/* DISPLAY NUMBER OF PATIENTS WITH RD NOTE */}
-              <div className="reassessNumber">{reassessmentCount} </div>
-              <div className="reassessmentDue">Reassessments Due in 3 Days</div>
+      <h1 style={{ textAlign: "center", padding: "2rem" }}>
+        Welcome, {user.username}!
+      </h1>
+      <div style={{ justifyContent: "center", display: "flex" }}>
+        <div className="homepageCards">
+          <div className="assessments" onClick={handleAssessments}>
+            <h3> Today's Assessments</h3>
+            <div className="assessmentCard">
+              <div className="assessmentColumn">
+                {/* DISPLAY NUMBER OF PATIENTS WITHOUT RD NOTE */}
+                <div className="initialNumber">{unseenPatients.length}</div>
+                <div className="initialDue">Initial Assessments Due</div>
+              </div>
+              <div className="initialColumn">
+                {/* DISPLAY NUMBER OF PATIENTS WITH RD NOTE */}
+                <div className="reassessNumber">{reassessmentCount} </div>
+                <div className="reassessmentDue">
+                  Reassessments Due in 3 Days
+                </div>
+              </div>
             </div>
           </div>
         </div>

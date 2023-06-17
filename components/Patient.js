@@ -3,6 +3,7 @@ import UserContext from "../contexts/UserContext";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Modal from "react-bootstrap/Modal";
 import Col from "react-bootstrap/Col";
+import Row from "react-bootstrap/Row";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { checkTokenExpiration } from "../pages/auth";
@@ -50,6 +51,9 @@ function Patient({ id }) {
       (patient) => patient.id === parseInt(id, 10)
     );
   }
+
+  const [editDietState, setEditDietState] = useState(currPatient);
+  console.log({ editDietState });
 
   const bmi =
     (currPatient.weight / (currPatient.height * currPatient.height)) * 703;
@@ -188,9 +192,29 @@ function Patient({ id }) {
     setCreateAssessmentModal(!createAssessmentModal);
   };
 
-  const handleEditDiet = () => {
-    setEditDiet(true);
+  const handleDietModal = () => {
+    setEditDiet(!editDiet);
   };
+
+  const handleDietInputChange = (value) => {
+    console.log("IN HANDLE DIET CHANGE", { value });
+    console.log("editDietState", editPositionState);
+    // editDietState ({
+    //   ...currPatient,
+    //   dietOrder,
+    //   fluidRestriction
+    // })
+  };
+
+  async function editPatientDiet() {
+    console.log("editDietState in EDITDIET FUNC", editDietState);
+    setEditDiet(!editDiet);
+
+    // const requestBody ={
+    //   ...currPatient,
+
+    // }
+  }
 
   return (
     <div>
@@ -430,7 +454,9 @@ function Patient({ id }) {
         </Modal.Footer>
       </Modal>
       <div className="patientInfo">
-        <h1 style={{ textAlign: "center" }}>{currPatient.name}</h1>
+        <h1 style={{ textAlign: "center", padding: "1.25rem" }}>
+          {currPatient.name}
+        </h1>
       </div>
       <div className="patientPage">
         <div className="notesColumn">
@@ -510,40 +536,63 @@ function Patient({ id }) {
           <div className="patientCards">
             <div>
               <h2>Dietary </h2>
-              <button className="patientButton" onClick={handleEditDiet}>
+              <button className="patientButton" onClick={handleDietModal}>
                 Edit
               </button>
             </div>
             {editDiet ? (
               <>
-                <Form.Label>Diet Order: </Form.Label>
-                <Form.Control
-                  as="textarea"
-                  defaultValue={currPatient.dietOrder}
-                  // value={createAssessmentState.skinIntegrity}
-                  // onChange={(e) =>
-                  //   setCreateAssessmentState({
-                  //     ...createAssessmentState,
-                  //     skinIntegrity: e.target.value,
-                  //   })
-                  //}
-                />
-                <Col sm={3}>
-                  <Form.Label htmlFor="email">Email</Form.Label>
-                  <Form.Control type="email" id="email" />
-                </Col>
-                <Form.Label>Fluid Restriction:</Form.Label>
-                <Form.Control
-                  as="textarea"
-                  defaultValue={currPatient.dietOrder}
-                  // value={createAssessmentState.skinIntegrity}
-                  // onChange={(e) =>
-                  //   setCreateAssessmentState({
-                  //     ...createAssessmentState,
-                  //     skinIntegrity: e.target.value,
-                  //   })
-                  //}
-                />
+                <Form>
+                  <Form.Group className="d-inline-flex">
+                    <Form.Label
+                      style={{ whiteSpace: "nowrap", padding: "0.5rem" }}
+                    >
+                      Diet Order:
+                    </Form.Label>
+                    <Form.Control
+                      as="textarea"
+                      defaultValue={currPatient.dietOrder}
+                      sm={9}
+                      style={{ justifyContent: "right" }}
+                      // value={editDietState.dietOrder}
+                      // onChange={handleDietInputChange}
+                      onChange={(e) =>
+                        setEditDietState({
+                          ...currPatient,
+                          dietOrder: e.target.value,
+                        })
+                      }
+                    />
+                  </Form.Group>
+                  <div>
+                    <Form.Group className="d-inline-flex">
+                      <Form.Label
+                        style={{ whiteSpace: "nowrap", padding: "0.5rem" }}
+                      >
+                        Fluid Restriction:
+                      </Form.Label>
+                      <Form.Control
+                        as="textarea"
+                        defaultValue={currPatient.fluidRestriction}
+                        sm={9}
+                        // value={editDietState.fluidRestriction}
+                        // onChange={handleDietInputChange}
+                        onChange={(e) =>
+                          setEditDietState({
+                            ...currPatient,
+                            fluidRestriction: e.target.value,
+                          })
+                        }
+                      />
+                    </Form.Group>
+                  </div>
+                </Form>
+                <Button variant="primary" onClick={editPatientDiet}>
+                  Submit Changes
+                </Button>
+                <Button variant="secondary" onClick={handleDietModal}>
+                  Cancel
+                </Button>
               </>
             ) : (
               <>

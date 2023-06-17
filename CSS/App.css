@@ -143,9 +143,11 @@
 .rowHeader {
   font-weight: 700;
   font-size: 18px;
+  background-color: #d8dbdb;
+  border-radius: 20px;
 }
 .patientListContainer {
-  /* padding: 1.25rem; */
+  padding: 1.25rem;
   text-align: center;
   width: auto;
   border-style: round;
@@ -157,13 +159,13 @@
 
 
 /* HOMEPAGE */
-.cards {
+.homepageCards {
   justify-content: center;
   align-items: center;
-  width: auto;
-  /* padding-left: 10px; */
-  display: grid;
-  grid-template-columns: 2fr 2fr;
+  display: inline-block;
+  padding-top: 10px;
+  /* display: grid; */
+  /* grid-template-columns: 2fr 2fr; */
 }
 
 .assessments {
@@ -205,6 +207,13 @@
   font-style: bold;
   color: red;
   font-family: Arial, Helvetica, sans-serif;
+}
+.assessmentCard:hover {
+  background-color: #ceeeee;
+  transition: background-color 0.3s ease; /* Add transition for smooth color change */
+  border-radius: 20px;
+  padding-bottom: 20px;
+  /* padding-right: 10px; */
 }
 
 /* PATIENT.JS */

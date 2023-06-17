@@ -31,7 +31,10 @@ function PatientFunc() {
       <Container>
         <Row>
           <Col>
-            <div className="patientListContainer">
+            <div
+              className="patientListContainer"
+              // style={{ paddingTop: "10px" }}
+            >
               {/* <table className="patientTable"> */}
               <Container>
                 <Row className="rowHeader">

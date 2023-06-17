@@ -65,7 +65,11 @@ function AssessmentsPage() {
             </Row>
             {patients &&
               unseenPatients.map((patient) => (
-                <Row className="row" key={patient.id}>
+                <Row
+                  className="row"
+                  style={{ padding: "0.5rem" }}
+                  key={patient.id}
+                >
                   <Col>{patient.name}</Col>
                   <Col>{formatDate(patient.dateOfBirth)}</Col>
                   <Col>{patient.id}</Col>
@@ -98,7 +102,11 @@ function AssessmentsPage() {
               <Col></Col>
               {reassessmentInThreeDays.length > 0 &&
                 reassessmentInThreeDays.map((patient) => (
-                  <Row className="row" key={patient.id}>
+                  <Row
+                    className="row"
+                    style={{ padding: "0.5rem" }}
+                    key={patient.id}
+                  >
                     <Col>{patient.name}</Col>
                     <Col>{formatDate(patient.dateOfBirth)}</Col>
                     <Col>{patient.id}</Col>
@@ -139,7 +147,11 @@ function AssessmentsPage() {
             </Row>
             {seenPatients &&
               seenPatients.map((patient) => (
-                <Row className="row" key={patient.id}>
+                <Row
+                  className="row"
+                  style={{ padding: "0.5rem" }}
+                  key={patient.id}
+                >
                   <Col>{patient.name}</Col>
                   <Col>{formatDate(patient.dateOfBirth)}</Col>
                   <Col>{patient.id}</Col>
