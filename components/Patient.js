@@ -35,6 +35,12 @@ function Patient({ id }) {
     initialAssessmentState
   );
   const [editDiet, setEditDiet] = useState(false);
+  const initialDietState = {
+    dietOrder: "",
+    fluidRestriction: 0,
+  };
+  const [editDietState, setEditDietState] = useState(initialDietState);
+  console.log({ editDietState });
 
   let notesObj = {};
   let assessmentObj = {};
@@ -51,9 +57,6 @@ function Patient({ id }) {
       (patient) => patient.id === parseInt(id, 10)
     );
   }
-
-  const [editDietState, setEditDietState] = useState(currPatient);
-  console.log({ editDietState });
 
   const bmi =
     (currPatient.weight / (currPatient.height * currPatient.height)) * 703;
@@ -198,7 +201,7 @@ function Patient({ id }) {
 
   const handleDietInputChange = (value) => {
     console.log("IN HANDLE DIET CHANGE", { value });
-    console.log("editDietState", editPositionState);
+    console.log("editDietState", editDietState);
     // editDietState ({
     //   ...currPatient,
     //   dietOrder,
@@ -208,12 +211,26 @@ function Patient({ id }) {
 
   async function editPatientDiet() {
     console.log("editDietState in EDITDIET FUNC", editDietState);
-    setEditDiet(!editDiet);
-
-    // const requestBody ={
-    //   ...currPatient,
-
-    // }
+    const requestBody = {
+      dietOrder: editDietState.dietOrder,
+      fluidRestriction: editDietState.fluidRestriction,
+    };
+    const response = await fetch(`http://localhost:3001/api/patient/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        requestBody,
+      }),
+    });
+    if (response.ok) {
+      console.log("Diet order changed", response);
+      setEditDiet(!editDiet);
+      queryClient.invalidateQueries(["patient"]); // Invalidate the assessment query to fetch updated data
+    } else {
+      console.error("Failed to change diet order.");
+    }
   }
 
   return (
@@ -558,7 +575,7 @@ function Patient({ id }) {
                       // onChange={handleDietInputChange}
                       onChange={(e) =>
                         setEditDietState({
-                          ...currPatient,
+                          ...editDietState,
                           dietOrder: e.target.value,
                         })
                       }
@@ -579,7 +596,7 @@ function Patient({ id }) {
                         // onChange={handleDietInputChange}
                         onChange={(e) =>
                           setEditDietState({
-                            ...currPatient,
+                            ...editDietState,
                             fluidRestriction: e.target.value,
                           })
                         }

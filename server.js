@@ -162,6 +162,63 @@ app.post("/api/patient/:patientId", async (req, res) => {
   }
 });
 
+// app.put("/api/patient/:patientId", async (req, res) => {
+//   const patientId = req.params.patientId;
+
+//   try {
+//     await Patient.update(
+//       { assessments },
+//       { where: { patientId } }
+//     );
+//     await Note.update(
+//       { notes },
+//       { where: { patientId } }
+//     );
+
+//     res.json({
+//       message: "Assessments and notes for patient " + patientId + " updated successfully",
+//     });
+//   } catch (error) {
+//     console.log("error on route");
+//     console.error(error);
+//     res.status(500).json({ message: "Server error" });
+//   }
+// });
+
+app.put("/api/patient/:patientId", async (req, res) => {
+  const patientId = req.params.patientId;
+  const { requestBody } = req.body;
+  const { dietOrder, fluidRestriction } = requestBody;
+  console.log(req.body, dietOrder, fluidRestriction);
+
+  try {
+    const patient = await Patient.findByPk(patientId);
+
+    if (!patient) {
+      return res.status(404).json({ message: "Patient not found" });
+    }
+    // console.log( patient );
+    // Update the dietOrder and fluidRestriction fields
+    patient.dietOrder = dietOrder;
+    patient.fluidRestriction = fluidRestriction;
+
+    // Save the changes to the database
+    await patient.save();
+
+    res.json({
+      message:
+        "Diet order and fluid restriction for patient " +
+        patientId +
+        " updated successfully",
+      patient,
+    });
+  } catch (error) {
+    console.log("error on route");
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 app.listen(3001, () => {
   console.log("Server is running on port 3001");
 });
