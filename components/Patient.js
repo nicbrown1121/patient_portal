@@ -43,7 +43,6 @@ function Patient({ id }) {
     fluidRestriction: 0,
   };
   const [editDietState, setEditDietState] = useState(initialDietState);
-  console.log({ editDietState });
 
   let notesObj = {};
   let assessmentObj = {};
@@ -129,8 +128,7 @@ function Patient({ id }) {
     notesObj = notesAndAssessments.notes;
     assessmentObj = notesAndAssessments.assessments;
   }
-  // let reassessmentDate = calculateReassessmentDate(assessmentObj);
-  const reassessmentDate = currPatient.reassessmentDate;
+  let reassessmentDate = calculateReassessmentDate(assessmentObj);
   const threeDaysFromReassess =
     calculateThreeDaysFromReassess(reassessmentDate);
   let openReassessment = isOpenReassessment(
@@ -138,8 +136,6 @@ function Patient({ id }) {
     formatDate(threeDaysFromReassess),
     formatDate(reassessmentDate)
   );
-
-  console.log({ reassessmentDate, threeDaysFromReassess, openReassessment });
 
   const handleCreateNote = () => {
     setCreateNoteModal(!createNoteModal);
@@ -158,7 +154,6 @@ function Patient({ id }) {
       }),
     });
     if (response.ok) {
-      console.log("Note created successfully");
       handleClose();
       setNote("");
       queryClient.invalidateQueries(["notesassessments"]); // Invalidate the assessment query to fetch updated data
@@ -168,7 +163,6 @@ function Patient({ id }) {
   }
 
   async function createAssessment() {
-    console.log("in create assessment");
     const requestBody = { ...createAssessmentState };
     const response = await fetch(`http://localhost:3001/api/patient/${id}`, {
       method: "POST",
@@ -183,7 +177,6 @@ function Patient({ id }) {
       }),
     });
     if (response.ok) {
-      console.log("Assessment created successfully");
       handleClose();
       queryClient.invalidateQueries(["notesassessments"]); // Invalidate the assessment query to fetch updated data
     } else {
@@ -229,7 +222,6 @@ function Patient({ id }) {
         });
       },
       onSuccess: async (response, data) => {
-        console.log("Diet order changed");
         setEditDiet(!editDiet);
         queryClient.invalidateQueries(["patient"]);
       },
@@ -246,10 +238,7 @@ function Patient({ id }) {
     if (editDietState.fluidRestriction === "") {
       editDietState.fluidRestriction = currPatient.fluidRestriction;
     }
-    console.log({
-      editDietOrder: editDietState.dietOrder,
-      editFluid: editDietState.fluidRestriction,
-    });
+
     const requestBody = {
       dietOrder: editDietState.dietOrder,
       fluidRestriction: editDietState.fluidRestriction,
@@ -257,7 +246,6 @@ function Patient({ id }) {
     mutation.mutate(requestBody);
   }
 
-  console.log({ currPatient });
   // async function editPatientDiet() {
   //   console.log("editDietState in EDITDIET FUNC", editDietState);
   //   const requestBody = {

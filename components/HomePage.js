@@ -46,8 +46,6 @@ export default function HomePage() {
     // cacheTime: "300000",
   });
 
-  console.log({ patientData });
-
   // const { data: seenPatientData } = useQuery({
   //   queryKey: ["patient", { seen: true }],
   //   queryFn: fetchPatients,
@@ -69,7 +67,6 @@ export default function HomePage() {
       );
     }
   }
-  console.log({ seenPatients });
 
   if (seenPatients.length > 0) {
     reassessmentCount = seenPatients.reduce((count, patient) => {

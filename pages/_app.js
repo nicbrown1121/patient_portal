@@ -2,7 +2,7 @@
 import "bootstrap/dist/css/bootstrap.css";
 import Link from "next/link";
 import UserContext, { UserReducer } from "../contexts/UserContext";
-import React, { useState, useReducer } from "react";
+import React, { useReducer } from "react";
 import "../CSS/App.css";
 import { useRouter } from "next/router";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -19,6 +19,7 @@ function App({ Component, pageProps }) {
   };
 
   const [user, dispatch] = useReducer(UserReducer, initialUserContext);
+  console.log({ user });
 
   const handleNavigate = (path) => {
     router.push(path);
@@ -30,16 +31,19 @@ function App({ Component, pageProps }) {
         <div>
           <nav className="navBar">
             <div className="leftLinks">
-              {/* <button onClick={() => handleNavigate("/")}>Home</button> */}
-              <div onClick={() => handleNavigate("/")}>Home</div>
-              <div onClick={() => handleNavigate("/patientlist")}>Patients</div>
-              <div onClick={() => handleNavigate("/assessments")}>
-                Assessments
-              </div>
+              <Link href="/">Home</Link>
+              <Link href="/patientlist">Patients</Link>
+              <Link href="/assessments">Assessments</Link>
             </div>
             <div className="rightLinks">
-              <div onClick={() => handleNavigate("/login")}>Login</div>
-              <div onClick={() => handleNavigate("/register")}>Register</div>
+              {user.isLoggedIn ? (
+                <Link href="/logout"> Logout</Link>
+              ) : (
+                <div>
+                  <Link href="/login">Login</Link>
+                  <Link href="/register">Register</Link>
+                </div>
+              )}
             </div>
           </nav>
           <Component {...pageProps} />

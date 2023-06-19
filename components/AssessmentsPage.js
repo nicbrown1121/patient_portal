@@ -10,6 +10,7 @@ import {
   isOpenReassessment,
 } from "./utils/reassessmentDateCalc";
 import { sortPatientsByLocation } from "./utils/sortByLocation";
+import PatientButton from "./PatientButton";
 // import { checkTokenExpiration } from "../pages/auth";
 
 function AssessmentsPage() {
@@ -31,6 +32,8 @@ function AssessmentsPage() {
     seenPatients = patients.data.filter((patient) => patient.seen);
     unseenPatients = patients.data.filter((patient) => !patient.seen);
   }
+
+  console.log({ unseenPatients });
 
   if (seenPatients.length > 0) {
     reassessmentInThreeDays = seenPatients.filter((patient) => {
@@ -87,12 +90,7 @@ function AssessmentsPage() {
                     <Col>{patient.id}</Col>
                     <Col>{patient.location}</Col>
                     <Col>
-                      <button
-                        className="patientButton"
-                        onClick={() => goToPatient(patient.id)}
-                      >
-                        Go to Patient
-                      </button>
+                      <PatientButton />
                     </Col>
                   </Row>
                 ))
@@ -108,12 +106,7 @@ function AssessmentsPage() {
                     <Col>{patient.id}</Col>
                     <Col>{patient.location}</Col>
                     <Col>
-                      <button
-                        className="patientButton"
-                        onClick={() => goToPatient(patient.id)}
-                      >
-                        Go to Patient
-                      </button>
+                      <PatientButton />
                     </Col>
                   </Row>
                 ))}
@@ -145,12 +138,7 @@ function AssessmentsPage() {
                   <Col>{patient.id}</Col>
                   <Col>{patient.location}</Col>
                   <Col>
-                    <button
-                      className="patientButton"
-                      onClick={() => goToPatient(patient.id)}
-                    >
-                      Go to Patient
-                    </button>
+                    <PatientButton />
                   </Col>
                 </Row>
               ))}
@@ -189,12 +177,7 @@ function AssessmentsPage() {
                   <Col>{patient.id}</Col>
                   <Col>{patient.location}</Col>
                   <Col>
-                    <button
-                      className="patientButton"
-                      onClick={() => goToPatient(patient.id)}
-                    >
-                      Go to Patient
-                    </button>
+                    <PatientButton />
                   </Col>
                 </Row>
               ))}

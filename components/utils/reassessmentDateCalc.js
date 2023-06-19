@@ -17,7 +17,6 @@ export function calculateThreeDaysFromReassess(reassessmentDate) {
   if (reassessmentDate) {
     const threeDaysFromReassess = new Date(reassessmentDate);
     threeDaysFromReassess.setDate(threeDaysFromReassess.getDate() - 3);
-    console.log("three days from reassess", { threeDaysFromReassess });
     return threeDaysFromReassess;
   }
   return null;
