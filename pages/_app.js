@@ -33,6 +33,9 @@ function App({ Component, pageProps }) {
               {/* <button onClick={() => handleNavigate("/")}>Home</button> */}
               <div onClick={() => handleNavigate("/")}>Home</div>
               <div onClick={() => handleNavigate("/patientlist")}>Patients</div>
+              <div onClick={() => handleNavigate("/assessments")}>
+                Assessments
+              </div>
             </div>
             <div className="rightLinks">
               <div onClick={() => handleNavigate("/login")}>Login</div>

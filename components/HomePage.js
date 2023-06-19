@@ -4,6 +4,7 @@ import UserContext from "../contexts/UserContext";
 import { useQuery } from "@tanstack/react-query";
 import { checkTokenExpiration } from "../pages/auth";
 import { fetchPatients } from "./api/api";
+import { formatDate } from "./utils/formatDate";
 import {
   getCurrentDate,
   calculateReassessmentDate,
@@ -76,9 +77,9 @@ export default function HomePage() {
         patient.reassessmentDate
       );
       let openReassessment = isOpenReassessment(
-        currDate,
-        threeDaysFromReassess,
-        patient.reassessmentDate
+        formatDate(currDate),
+        formatDate(threeDaysFromReassess),
+        formatDate(patient.reassessmentDate)
       );
 
       if (openReassessment) {
@@ -88,8 +89,6 @@ export default function HomePage() {
       }
     }, 0);
   }
-
-  console.log({ reassessmentCount });
 
   const handleAssessments = () => {
     router.push("/assessments");

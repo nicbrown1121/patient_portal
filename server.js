@@ -107,23 +107,11 @@ app.get("/api/patient/:patientId", async (req, res) => {
 
 app.post("/api/patient/:patientId", async (req, res) => {
   const { patientId } = req.params;
-  const { type, text, username, requestBody, completed } = req.body;
-  const {
-    frameSize,
-    weightTrend,
-    acutePOIntake,
-    muscleMass,
-    fatMass,
-    hospitalizedLast30Days,
-    skinIntegrity,
-    comment,
-    recommendations,
-  } = requestBody;
-  console.log({ type, requestBody, username, frameSize });
-
+  const { type, username } = req.body;
   const user = await Worker.findOne({ where: { username } });
   try {
     if (type === "note") {
+      const { text } = req.body;
       const note = await Note.create({
         patientId: patientId,
         text: text,
@@ -131,6 +119,18 @@ app.post("/api/patient/:patientId", async (req, res) => {
       });
       res.status(201).json({ note });
     } else if (type === "assessment") {
+      const { requestBody, completed } = req.body;
+      const {
+        frameSize,
+        weightTrend,
+        acutePOIntake,
+        muscleMass,
+        fatMass,
+        hospitalizedLast30Days,
+        skinIntegrity,
+        comment,
+        recommendations,
+      } = requestBody;
       console.log("creating a new assessment");
       const newAssessment = await Assessment.create({
         patientId: patientId,
@@ -187,24 +187,21 @@ app.post("/api/patient/:patientId", async (req, res) => {
 
 app.put("/api/patient/:patientId", async (req, res) => {
   const patientId = req.params.patientId;
+  console.log(req.body);
   const { requestBody } = req.body;
   const { dietOrder, fluidRestriction } = requestBody;
-  console.log(req.body, dietOrder, fluidRestriction);
-
   try {
     const patient = await Patient.findByPk(patientId);
 
     if (!patient) {
       return res.status(404).json({ message: "Patient not found" });
     }
-    // console.log( patient );
     // Update the dietOrder and fluidRestriction fields
     patient.dietOrder = dietOrder;
     patient.fluidRestriction = fluidRestriction;
 
     // Save the changes to the database
     await patient.save();
-
     res.json({
       message:
         "Diet order and fluid restriction for patient " +

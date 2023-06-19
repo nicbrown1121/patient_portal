@@ -9,6 +9,7 @@ import {
   calculateThreeDaysFromReassess,
   isOpenReassessment,
 } from "./utils/reassessmentDateCalc";
+import { sortPatientsByLocation } from "./utils/sortByLocation";
 // import { checkTokenExpiration } from "../pages/auth";
 
 function AssessmentsPage() {
@@ -16,6 +17,8 @@ function AssessmentsPage() {
   const queryClient = useQueryClient();
   const router = useRouter();
   const currDate = getCurrentDate();
+  const [sortedPatients, setSortedPatients] = useState([]);
+  const [sortAscending, setSortAscending] = useState(true);
 
   const patients = queryClient.getQueryData(["patient"]);
   let seenPatients = {};
@@ -35,14 +38,21 @@ function AssessmentsPage() {
         patient.reassessmentDate
       );
       let openReassessment = isOpenReassessment(
-        currDate,
-        threeDaysFromReassess,
-        patient.reassessmentDate
+        formatDate(currDate),
+        formatDate(threeDaysFromReassess),
+        formatDate(patient.reassessmentDate)
       );
       return openReassessment;
     });
   }
-  console.log(reassessmentInThreeDays);
+
+  console.log({ reassessmentInThreeDays });
+
+  const handleSortByLocation = () => {
+    const sortedArray = sortPatientsByLocation(unseenPatients, sortAscending);
+    setSortedPatients(sortedArray);
+    setSortAscending(!sortAscending);
+  };
 
   const goToPatient = (patientId) => {
     router.push(`/patient/${patientId}`);
@@ -60,48 +70,34 @@ function AssessmentsPage() {
               <Col>Patient Name</Col>
               <Col>DOB</Col>
               <Col>MRN</Col>
-              <Col>Location</Col>
+              <Col onClick={handleSortByLocation} style={{ cursor: "pointer" }}>
+                Location <span>{sortAscending ? "▲" : "▼"}</span>
+              </Col>
               <Col></Col>
             </Row>
-            {patients &&
-              unseenPatients.map((patient) => (
-                <Row
-                  className="row"
-                  style={{ padding: "0.5rem" }}
-                  key={patient.id}
-                >
-                  <Col>{patient.name}</Col>
-                  <Col>{formatDate(patient.dateOfBirth)}</Col>
-                  <Col>{patient.id}</Col>
-                  <Col>{patient.location}</Col>
-                  <Col>
-                    <button
-                      className="patientButton"
-                      onClick={() => goToPatient(patient.id)}
-                    >
-                      Go to Patient
-                    </button>
-                  </Col>
-                </Row>
-              ))}
-            {/* </Row> */}
-          </Container>
-        </div>
-      </div>
-      <h3 style={{ fontSize: "30px", paddingTop: "25px", paddingLeft: "80px" }}>
-        Reassessments Due{" "}
-      </h3>
-      <div style={{ display: "flex", justifyContent: "center" }}>
-        <div className="patientCard">
-          <Container>
-            <Row className="rowHeader">
-              <Col>Patient Name</Col>
-              <Col>DOB</Col>
-              <Col>MRN</Col>
-              <Col>Location</Col>
-              <Col></Col>
-              {reassessmentInThreeDays.length > 0 &&
-                reassessmentInThreeDays.map((patient) => (
+            {sortedPatients.length > 0
+              ? sortedPatients.map((patient) => (
+                  <Row
+                    className="row"
+                    style={{ padding: "0.5rem" }}
+                    key={patient.id}
+                  >
+                    <Col>{patient.name}</Col>
+                    <Col>{formatDate(patient.dateOfBirth)}</Col>
+                    <Col>{patient.id}</Col>
+                    <Col>{patient.location}</Col>
+                    <Col>
+                      <button
+                        className="patientButton"
+                        onClick={() => goToPatient(patient.id)}
+                      >
+                        Go to Patient
+                      </button>
+                    </Col>
+                  </Row>
+                ))
+              : unseenPatients &&
+                unseenPatients.map((patient) => (
                   <Row
                     className="row"
                     style={{ padding: "0.5rem" }}
@@ -121,7 +117,43 @@ function AssessmentsPage() {
                     </Col>
                   </Row>
                 ))}
+          </Container>
+        </div>
+      </div>
+      <h3 style={{ fontSize: "30px", paddingTop: "25px", paddingLeft: "80px" }}>
+        Reassessments Due
+      </h3>
+      <div style={{ display: "flex", justifyContent: "center" }}>
+        <div className="patientCard">
+          <Container>
+            <Row className="rowHeader">
+              <Col>Patient Name</Col>
+              <Col>DOB</Col>
+              <Col>MRN</Col>
+              <Col>Location</Col>
+              <Col></Col>
             </Row>
+            {reassessmentInThreeDays.length > 0 &&
+              reassessmentInThreeDays.map((patient) => (
+                <Row
+                  className="row"
+                  style={{ padding: "0.5rem" }}
+                  key={patient.id}
+                >
+                  <Col>{patient.name}</Col>
+                  <Col>{formatDate(patient.dateOfBirth)}</Col>
+                  <Col>{patient.id}</Col>
+                  <Col>{patient.location}</Col>
+                  <Col>
+                    <button
+                      className="patientButton"
+                      onClick={() => goToPatient(patient.id)}
+                    >
+                      Go to Patient
+                    </button>
+                  </Col>
+                </Row>
+              ))}
           </Container>
         </div>
       </div>
@@ -174,70 +206,3 @@ function AssessmentsPage() {
 }
 
 export default AssessmentsPage;
-
-// <div>
-//   <h3 style={{ fontSize: "30px" }}>Initial Assessments Due </h3>
-//   <div className="patientCard">
-//     <table className="patientTable">
-//       <thead>
-//         <tr>
-//           <th>Patient Name</th>
-//           <th>DOB</th>
-//           <th>MRN</th>
-//           <th>Location</th>
-//         </tr>
-//       </thead>
-//       <tbody className="patientList">
-//         {patients &&
-//           unseenPatients.map((patient) => (
-//             <tr className="row" key={patient.id}>
-//               <td>{patient.name}</td>
-//               <td>{formatDate(patient.dateOfBirth)}</td>
-//               <td>{patient.id}</td>
-//               <td>{patient.location}</td>
-//               <td>
-//                 <button
-//                   className="patientButton"
-//                   onClick={() => goToPatient(patient.id)}
-//                 >
-//                   Go to Patient
-//                 </button>
-//               </td>
-//             </tr>
-//           ))}
-//       </tbody>
-//     </table>
-//   </div>
-//   <h3 style={{ fontSize: "30px" }}>Reassessments Due </h3>
-//   <div className="patientCard">
-//     <table className="patientTable">
-//       <thead>
-//         <tr>
-//           <th>Patient Name</th>
-//           <th>DOB</th>
-//           <th>MRN</th>
-//           <th>Location</th>
-//         </tr>
-//       </thead>
-//       <tbody className="patientList">
-//         {patients &&
-//           seenPatients.map((patient) => (
-//             <tr className="row" key={patient.id}>
-//               <td>{patient.name}</td>
-//               <td>{formatDate(patient.dateOfBirth)}</td>
-//               <td>{patient.id}</td>
-//               <td>{patient.location}</td>
-//               <td>
-//                 <button
-//                   className="patientButton"
-//                   onClick={() => goToPatient(patient.id)}
-//                 >
-//                   Go to Patient
-//                 </button>
-//               </td>
-//             </tr>
-//           ))}
-//       </tbody>
-//     </table>
-//   </div>
-// </div>

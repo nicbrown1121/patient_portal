@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useContext } from "react";
 import UserContext from "../contexts/UserContext";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import Modal from "react-bootstrap/Modal";
+import Container from "react-bootstrap/Container";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import Form from "react-bootstrap/Form";
@@ -10,6 +11,8 @@ import { checkTokenExpiration } from "../pages/auth";
 import { formatDate } from "./utils/formatDate";
 import { fetchNotesandAssessments } from "./api/api";
 import { initialAssessmentState } from "./utils/initialStates";
+import { calculateAge } from "./utils/getAge";
+
 import {
   frameSizeOptions,
   weightTrendOptions,
@@ -126,13 +129,14 @@ function Patient({ id }) {
     notesObj = notesAndAssessments.notes;
     assessmentObj = notesAndAssessments.assessments;
   }
-  let reassessmentDate = calculateReassessmentDate(assessmentObj);
+  // let reassessmentDate = calculateReassessmentDate(assessmentObj);
+  const reassessmentDate = currPatient.reassessmentDate;
   const threeDaysFromReassess =
     calculateThreeDaysFromReassess(reassessmentDate);
   let openReassessment = isOpenReassessment(
-    currDate,
-    threeDaysFromReassess,
-    reassessmentDate
+    formatDate(currDate),
+    formatDate(threeDaysFromReassess),
+    formatDate(reassessmentDate)
   );
 
   console.log({ reassessmentDate, threeDaysFromReassess, openReassessment });
@@ -156,6 +160,7 @@ function Patient({ id }) {
     if (response.ok) {
       console.log("Note created successfully");
       handleClose();
+      setNote("");
       queryClient.invalidateQueries(["notesassessments"]); // Invalidate the assessment query to fetch updated data
     } else {
       console.error("Failed to create note.");
@@ -199,39 +204,83 @@ function Patient({ id }) {
     setEditDiet(!editDiet);
   };
 
-  const handleDietInputChange = (value) => {
-    console.log("IN HANDLE DIET CHANGE", { value });
-    console.log("editDietState", editDietState);
-    // editDietState ({
-    //   ...currPatient,
-    //   dietOrder,
-    //   fluidRestriction
-    // })
-  };
+  const mutation = useMutation(
+    (requestBody) =>
+      fetch(`http://localhost:3001/api/patient/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ requestBody }),
+      }),
+    {
+      onMutate: async (newDiet) => {
+        console.log({ newDiet });
+        await queryClient.cancelQueries({ queryKey: ["patient"] });
+        const previousDiet = queryClient.getQueryData(["patient"]);
+        queryClient.setQueryData(["patient"], (patientData) => {
+          const newData = patientData.data.map((patient) => {
+            if (patient.id === currPatient.id) {
+              return { ...patient, ...newDiet };
+            } else return patient;
+          });
+          patientData.data = newData;
+          return patientData;
+        });
+      },
+      onSuccess: async (response, data) => {
+        console.log("Diet order changed");
+        setEditDiet(!editDiet);
+        queryClient.invalidateQueries(["patient"]);
+      },
+      onError: async (error) => {
+        console.error("Failed to change diet order.", error);
+      },
+    }
+  );
 
   async function editPatientDiet() {
-    console.log("editDietState in EDITDIET FUNC", editDietState);
+    if (editDietState.dietOrder === "") {
+      editDietState.dietOrder = currPatient.dietOrder;
+    }
+    if (editDietState.fluidRestriction === "") {
+      editDietState.fluidRestriction = currPatient.fluidRestriction;
+    }
+    console.log({
+      editDietOrder: editDietState.dietOrder,
+      editFluid: editDietState.fluidRestriction,
+    });
     const requestBody = {
       dietOrder: editDietState.dietOrder,
       fluidRestriction: editDietState.fluidRestriction,
     };
-    const response = await fetch(`http://localhost:3001/api/patient/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        requestBody,
-      }),
-    });
-    if (response.ok) {
-      console.log("Diet order changed", response);
-      setEditDiet(!editDiet);
-      queryClient.invalidateQueries(["patient"]); // Invalidate the assessment query to fetch updated data
-    } else {
-      console.error("Failed to change diet order.");
-    }
+    mutation.mutate(requestBody);
   }
+
+  console.log({ currPatient });
+  // async function editPatientDiet() {
+  //   console.log("editDietState in EDITDIET FUNC", editDietState);
+  //   const requestBody = {
+  //     dietOrder: editDietState.dietOrder,
+  //     fluidRestriction: editDietState.fluidRestriction,
+  //   };
+  //   const response = await fetch(`http://localhost:3001/api/patient/${id}`, {
+  //     method: "PUT",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //     body: JSON.stringify({
+  //       requestBody,
+  //     }),
+  //   });
+  //   if (response.ok) {
+  //     console.log("Diet order changed", response);
+  //     setEditDiet(!editDiet);
+  //     queryClient.invalidateQueries(["patient", id]); // Invalidate the assessment query to fetch updated data
+  //   } else {
+  //     console.error("Failed to change diet order.");
+  //   }
+  // }
 
   return (
     <div>
@@ -287,14 +336,31 @@ function Patient({ id }) {
         <Modal.Body>
           <Form className="formStyle">
             <Form.Group>
-              <Form.Label disabled style={{ fontStyle: "bold" }}>
-                Patient: {currPatient.name}{" "}
+              <Form.Label className="text-muted" disabled>
+                User: {user.username}
               </Form.Label>
             </Form.Group>
-            <Form.Group>
-              <Form.Label disabled>User: {user.username} </Form.Label>
-            </Form.Group>
+            <Row>
+              <Col>
+                <Form.Group>
+                  <Form.Label disabled style={{ fontStyle: "bold" }}>
+                    Patient: {currPatient.name}
+                  </Form.Label>
+                </Form.Group>
+              </Col>
+              <Col>
+                <Form.Group>
+                  <Form.Label disabled style={{ fontStyle: "bold" }}>
+                    Age: {calculateAge(currPatient.dateOfBirth)}
+                  </Form.Label>
+                </Form.Group>
+              </Col>
+            </Row>
 
+            <Form.Text>Anthropometrics</Form.Text>
+            <Form.Group name="bmi">
+              <Form.Label>BMI: {bmi.toFixed(2)}</Form.Label>
+            </Form.Group>
             <Form.Group name="frameSize">
               <Form.Label>Frame Size: </Form.Label>
               <select
@@ -395,7 +461,13 @@ function Patient({ id }) {
               </select>
             </Form.Group>
 
-            <Form.Group name="fatMass">
+            <Form.Group name="hospitalization">
+              <Form.Text>Recent Hospitalization(s)</Form.Text>
+              <Form.Group>
+                <Form.Label disabled style={{ fontStyle: "bold" }}>
+                  Admitting Diagnosis: {currPatient.diagnosis}
+                </Form.Label>
+              </Form.Group>
               <Form.Label>Hospitalized within Last 30 Days: </Form.Label>
               <select
                 value={createAssessmentState.hospitalizedLast30Days}
@@ -477,7 +549,10 @@ function Patient({ id }) {
       </div>
       <div className="patientPage">
         <div className="notesColumn">
-          <div className="assessments">
+          <div
+            className="assessments"
+            style={{ marginBottom: "1.25rem", cursor: "default" }}
+          >
             <h2>Assessments</h2>
             {assessmentObj && assessmentObj.length === 0 ? (
               <button
@@ -513,28 +588,31 @@ function Patient({ id }) {
               </>
             )}
           </div>
-          <div className="assessments" style={{ overflowY: "scroll" }}>
+          <div
+            className="assessments"
+            style={{ overflowY: "scroll", cursor: "default" }}
+          >
             <h2>Notes</h2>
-            <button className="patientButton" onClick={handleCreateNote}>
-              Create Note
-            </button>
-            <table className="patientTable">
-              <thead>
-                <tr>
-                  <th>Created</th>
-                  <th>Note</th>
-                </tr>
-              </thead>
-              <tbody className="patientList">
-                {notesObj &&
-                  Object.values(notesObj).map((note) => (
-                    <tr className="row" key={note.id}>
-                      <td>{formatDate(note.createdAt)}</td>
-                      <td>{note.text}</td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
+            <div style={{ paddingBottom: "0.5rem" }}>
+              <button className="patientButton" onClick={handleCreateNote}>
+                Create Note
+              </button>
+            </div>
+            <Container className="patientTable">
+              <Row className="rowHeader">
+                <Col> Date </Col>
+                <Col>Note</Col>
+              </Row>
+            </Container>
+            <div className="patientList">
+              {notesObj &&
+                Object.values(notesObj).map((note) => (
+                  <Row className="row" key={note.id}>
+                    <Col>{formatDate(note.createdAt)}</Col>
+                    <Col>{note.text}</Col>
+                  </Row>
+                ))}
+            </div>
           </div>
         </div>
         <div className="rightColumn">
@@ -544,7 +622,7 @@ function Patient({ id }) {
             <ol> Diagnosis: {currPatient.diagnosis} </ol>
             <ol> Location: {currPatient.location} </ol>
           </div>
-          <div className="patientCards">
+          <div className="patientCards" style={{ marginBottom: "1.25rem" }}>
             <h2>Anthropometrics</h2>
             <ol>Height: {currPatient.height} inches</ol>
             <ol>Weight: {currPatient.weight} lbs</ol>
@@ -571,8 +649,6 @@ function Patient({ id }) {
                       defaultValue={currPatient.dietOrder}
                       sm={9}
                       style={{ justifyContent: "right" }}
-                      // value={editDietState.dietOrder}
-                      // onChange={handleDietInputChange}
                       onChange={(e) =>
                         setEditDietState({
                           ...editDietState,
@@ -592,8 +668,6 @@ function Patient({ id }) {
                         as="textarea"
                         defaultValue={currPatient.fluidRestriction}
                         sm={9}
-                        // value={editDietState.fluidRestriction}
-                        // onChange={handleDietInputChange}
                         onChange={(e) =>
                           setEditDietState({
                             ...editDietState,
@@ -604,9 +678,17 @@ function Patient({ id }) {
                     </Form.Group>
                   </div>
                 </Form>
-                <Button variant="primary" onClick={editPatientDiet}>
+                {/* <Button variant="primary" onClick={editPatientDiet}>
                   Submit Changes
+                </Button> */}
+                <Button
+                  variant="primary"
+                  onClick={editPatientDiet}
+                  disabled={mutation.isLoading}
+                >
+                  {mutation.isLoading ? "Submitting..." : "Submit Changes"}
                 </Button>
+
                 <Button variant="secondary" onClick={handleDietModal}>
                   Cancel
                 </Button>
