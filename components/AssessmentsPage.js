@@ -10,7 +10,6 @@ import {
   isOpenReassessment,
 } from "./utils/reassessmentDateCalc";
 import { sortPatientsByLocation } from "./utils/sortByLocation";
-import PatientButton from "./PatientButton";
 // import { checkTokenExpiration } from "../pages/auth";
 
 function AssessmentsPage() {
@@ -18,8 +17,12 @@ function AssessmentsPage() {
   const queryClient = useQueryClient();
   const router = useRouter();
   const currDate = getCurrentDate();
-  const [sortedPatients, setSortedPatients] = useState([]);
-  const [sortAscending, setSortAscending] = useState(true);
+
+  const [sortedInitialAssessments, setSortedInitialAssessments] = useState([]);
+  const [initialSortAscending, setInitialSortAscending] = useState(true);
+  const [reassessmentSortAscending, setReassessmentSortAscending] =
+    useState(true);
+  const [completedSortAscending, setCompletedSortAscending] = useState(true);
 
   const patients = queryClient.getQueryData(["patient"]);
   let seenPatients = {};
@@ -32,8 +35,6 @@ function AssessmentsPage() {
     seenPatients = patients.data.filter((patient) => patient.seen);
     unseenPatients = patients.data.filter((patient) => !patient.seen);
   }
-
-  console.log({ unseenPatients });
 
   if (seenPatients.length > 0) {
     reassessmentInThreeDays = seenPatients.filter((patient) => {
@@ -49,12 +50,35 @@ function AssessmentsPage() {
     });
   }
 
-  console.log({ reassessmentInThreeDays });
+  const [sortedCompletedAssessments, setSortedCompletedAssessments] =
+    useState(seenPatients);
+  const [sortedReassessments, setSortedReassessments] = useState(
+    reassessmentInThreeDays
+  );
 
-  const handleSortByLocation = () => {
-    const sortedArray = sortPatientsByLocation(unseenPatients, sortAscending);
-    setSortedPatients(sortedArray);
-    setSortAscending(!sortAscending);
+  const handleSortByLocation = (container) => {
+    if (container === "initialAssessments") {
+      const sortedArray = sortPatientsByLocation(
+        unseenPatients,
+        initialSortAscending
+      );
+      setSortedInitialAssessments(sortedArray);
+      setInitialSortAscending(!initialSortAscending);
+    } else if (container === "reassessments") {
+      const sortedArray = sortPatientsByLocation(
+        reassessmentInThreeDays,
+        reassessmentSortAscending
+      );
+      setSortedReassessments(sortedArray);
+      setReassessmentSortAscending(!reassessmentSortAscending);
+    } else if (container === "completedAssessments") {
+      const sortedArray = sortPatientsByLocation(
+        seenPatients,
+        completedSortAscending
+      );
+      setSortedCompletedAssessments(sortedArray);
+      setCompletedSortAscending(!completedSortAscending);
+    }
   };
 
   const goToPatient = (patientId) => {
@@ -73,13 +97,16 @@ function AssessmentsPage() {
               <Col>Patient Name</Col>
               <Col>DOB</Col>
               <Col>MRN</Col>
-              <Col onClick={handleSortByLocation} style={{ cursor: "pointer" }}>
-                Location <span>{sortAscending ? "▲" : "▼"}</span>
+              <Col
+                onClick={() => handleSortByLocation("initialAssessments")}
+                style={{ cursor: "pointer" }}
+              >
+                Location <span>{initialSortAscending ? "▲" : "▼"}</span>
               </Col>
               <Col></Col>
             </Row>
-            {sortedPatients.length > 0
-              ? sortedPatients.map((patient) => (
+            {sortedInitialAssessments.length > 0
+              ? sortedInitialAssessments.map((patient) => (
                   <Row
                     className="row"
                     style={{ padding: "0.5rem" }}
@@ -90,7 +117,12 @@ function AssessmentsPage() {
                     <Col>{patient.id}</Col>
                     <Col>{patient.location}</Col>
                     <Col>
-                      <PatientButton />
+                      <button
+                        className="patientButton"
+                        onClick={() => goToPatient(patient.id)}
+                      >
+                        Go to Patient
+                      </button>
                     </Col>
                   </Row>
                 ))
@@ -106,7 +138,12 @@ function AssessmentsPage() {
                     <Col>{patient.id}</Col>
                     <Col>{patient.location}</Col>
                     <Col>
-                      <PatientButton />
+                      <button
+                        className="patientButton"
+                        onClick={() => goToPatient(patient.id)}
+                      >
+                        Go to Patient
+                      </button>
                     </Col>
                   </Row>
                 ))}
@@ -123,11 +160,16 @@ function AssessmentsPage() {
               <Col>Patient Name</Col>
               <Col>DOB</Col>
               <Col>MRN</Col>
-              <Col>Location</Col>
+              <Col
+                onClick={() => handleSortByLocation("reassessments")}
+                style={{ cursor: "pointer" }}
+              >
+                Location <span>{reassessmentSortAscending ? "▲" : "▼"}</span>
+              </Col>
               <Col></Col>
             </Row>
-            {reassessmentInThreeDays.length > 0 &&
-              reassessmentInThreeDays.map((patient) => (
+            {sortedReassessments.length > 0 &&
+              sortedReassessments.map((patient) => (
                 <Row
                   className="row"
                   style={{ padding: "0.5rem" }}
@@ -138,7 +180,12 @@ function AssessmentsPage() {
                   <Col>{patient.id}</Col>
                   <Col>{patient.location}</Col>
                   <Col>
-                    <PatientButton />
+                    <button
+                      className="patientButton"
+                      onClick={() => goToPatient(patient.id)}
+                    >
+                      Go to Patient
+                    </button>
                   </Col>
                 </Row>
               ))}
@@ -162,11 +209,16 @@ function AssessmentsPage() {
               <Col>Patient Name</Col>
               <Col>DOB</Col>
               <Col>MRN</Col>
-              <Col>Location</Col>
+              <Col
+                onClick={() => handleSortByLocation("completedAssessments")}
+                style={{ cursor: "pointer" }}
+              >
+                Location <span>{completedSortAscending ? "▲" : "▼"}</span>
+              </Col>
               <Col></Col>
             </Row>
-            {seenPatients &&
-              seenPatients.map((patient) => (
+            {sortedCompletedAssessments &&
+              sortedCompletedAssessments.map((patient) => (
                 <Row
                   className="row"
                   style={{ padding: "0.5rem" }}
@@ -177,7 +229,12 @@ function AssessmentsPage() {
                   <Col>{patient.id}</Col>
                   <Col>{patient.location}</Col>
                   <Col>
-                    <PatientButton />
+                    <button
+                      className="patientButton"
+                      onClick={() => goToPatient(patient.id)}
+                    >
+                      Go to Patient
+                    </button>
                   </Col>
                 </Row>
               ))}

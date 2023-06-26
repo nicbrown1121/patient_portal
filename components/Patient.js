@@ -12,7 +12,6 @@ import { formatDate } from "./utils/formatDate";
 import { fetchNotesandAssessments } from "./api/api";
 import { initialAssessmentState } from "./utils/initialStates";
 import { calculateAge } from "./utils/getAge";
-
 import {
   frameSizeOptions,
   weightTrendOptions,
@@ -245,30 +244,6 @@ function Patient({ id }) {
     };
     mutation.mutate(requestBody);
   }
-
-  // async function editPatientDiet() {
-  //   console.log("editDietState in EDITDIET FUNC", editDietState);
-  //   const requestBody = {
-  //     dietOrder: editDietState.dietOrder,
-  //     fluidRestriction: editDietState.fluidRestriction,
-  //   };
-  //   const response = await fetch(`http://localhost:3001/api/patient/${id}`, {
-  //     method: "PUT",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //     body: JSON.stringify({
-  //       requestBody,
-  //     }),
-  //   });
-  //   if (response.ok) {
-  //     console.log("Diet order changed", response);
-  //     setEditDiet(!editDiet);
-  //     queryClient.invalidateQueries(["patient", id]); // Invalidate the assessment query to fetch updated data
-  //   } else {
-  //     console.error("Failed to change diet order.");
-  //   }
-  // }
 
   return (
     <div>
