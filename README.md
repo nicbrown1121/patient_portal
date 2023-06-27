@@ -1,6 +1,6 @@
 # patient-portal
 
-My patient portal, designed for a dietitian role. Allows the user to register and login. Upon login, the user is shown patients that are due for an initial assessment as well as patients that are have an upcoming reassessment due, per CMS guidelines. 
+My patient portal, designed for a dietitian role. Allows the user to register and login. Upon login, the user is shown patients that are due for an initial assessment as well as patients that have an upcoming reassessment due, per CMS guidelines. 
 
 ## Development
 
