@@ -7,12 +7,9 @@ const cors = require("cors");
 const jwt = require("jsonwebtoken");
 
 const app = express();
-// const dev = process.env.NODE_ENV !== "production";
-// const nextApp = next({ dev });
-// const handle = nextApp.getRequestHandler();
 
 app.use(cors());
-app.use(express.json()); // for parsing application/json
+app.use(express.json());
 
 app.post("/api/login", async (req, res) => {
   const { username, password } = req.body;
@@ -27,29 +24,29 @@ app.post("/api/login", async (req, res) => {
     return res.status(401).json({ message: "Incorrect password." });
   }
   // If user is found and password is right, create a token
-  const payload = { id: user.id, username: user.username };
+  const payload = { id: user.id, username: user.username, title: user.title };
   const token = jwt.sign(payload, "patientPortalSecret", {
     expiresIn: 90000, // expires in 24 hours
   });
   // return the information including token as JSON
-  res.status(200).json({ auth: true, token: token });
+  res.status(200).json({ auth: true, token: token, title: user.title });
   res.end();
 });
 
 // REGISTER
 app.post("/api/register", async (req, res) => {
   try {
-    console.log("Hitting /register route");
-    const { username, password } = req.body;
+    const { username, password, title } = req.body;
     // Hash the password before storing it in the database
     const hashedPassword = await bcrypt.hash(password, 10);
     // Insert the new user into the database
     await Worker.create({
       username: username,
       password: hashedPassword,
+      title: title,
     });
     // Return a response
-    res.status(201).json({ username: username });
+    res.status(201).json({ username: username, title: title });
     res.end();
   } catch (e) {
     console.error("Error in /register route: ", e);

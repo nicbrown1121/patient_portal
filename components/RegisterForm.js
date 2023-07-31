@@ -7,6 +7,7 @@ function RegisterForm() {
   const { user, dispatch } = useContext(UserContext);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [title, setTitle] = useState("");
 
   useEffect(() => {
     if (user.isLoggedIn) {
@@ -15,10 +16,12 @@ function RegisterForm() {
   }, [user.user, router]);
 
   const handleSubmit = async (event) => {
+    console.log({ title });
     event.preventDefault();
     const requestBody = {
       username: username,
       password: password,
+      title: title,
     };
     const response = await fetch("http://localhost:3001/api/register", {
       method: "POST",
@@ -68,6 +71,16 @@ function RegisterForm() {
             placeholder="Password"
             onChange={(e) => setPassword(e.target.value)}
           />
+          <select
+            className="inputField"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+          >
+            <option value="">Select Title</option>
+            <option value="Nurse">Nurse</option>
+            <option value="Dietitian">Dietitian</option>
+            <option value="Pharmacist">Pharmacist</option>
+          </select>
           <button className="inputButton" type="submit">
             Register
           </button>

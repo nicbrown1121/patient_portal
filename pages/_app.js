@@ -14,12 +14,13 @@ function App({ Component, pageProps }) {
     typeof window !== "undefined" ? localStorage.getItem("token") : "";
   const initialUserContext = {
     username: "",
+    title: null,
     isLoggedIn: false,
     token: token,
   };
 
   const [user, dispatch] = useReducer(UserReducer, initialUserContext);
-  console.log({ user });
+  // console.log({ user });
 
   const handleNavigate = (path) => {
     router.push(path);

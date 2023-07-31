@@ -7,6 +7,7 @@ const UserContext = createContext(null);
 
 export const UserReducer = (user, action) => {
   console.log("action.payload", action.payload);
+  console.log({ user });
   switch (action.type) {
     case "REGISTER":
       return {
@@ -17,6 +18,7 @@ export const UserReducer = (user, action) => {
     case "LOGIN":
       return {
         ...user,
+        title: action.payload.title,
         username: action.payload.username,
         isLoggedIn: true,
         token: action.payload.token,
@@ -25,6 +27,7 @@ export const UserReducer = (user, action) => {
     case "LOGOUT":
       return {
         ...user,
+        title: null,
         username: "",
         isLoggedIn: false,
         token: "",
