@@ -1,6 +1,6 @@
 # patient-portal
 
-My patient portal, designed for a dietitian role. Allows the user to register and login. Upon login, the user is shown patients that are due for an initial assessment as well as patients that have an upcoming reassessment due, per CMS guidelines. 
+My patient portal application adds role-based permissions and access to healthcare software. The first iteration is based around the role of the dietitian. Future iterations are to take on other healthcare roles - pharmacist, nurse, etc. A user of this app is able to register and login. Upon logging in, the user is shown patients that are due for an initial assessment as well as patients that have an upcoming reassessment due, per CMS guidelines. 
 
 ## Development
 
@@ -13,7 +13,9 @@ docker run -d --name patient_db -p 5433:5432 -e POSTGRES_USER=postgres -e POSTGR
 postgres://postgres:patient-portal123@patient_db:5433
 
 ## Running Application
-- Create two terminals and cd into the `/patient-portal` directory. In one terminal, run next using command `npm run dev`. In the second terminal, run server with command `node server.js`.
+- Create two terminals and cd into the `/patient-portal` directory.
+- In one terminal, run next using command `npm run dev`.
+- In the second terminal, run server with command `node server.js`.
 
 ## Features:
 
